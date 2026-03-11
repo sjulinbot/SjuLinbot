@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Linways AMS - Academic Calendar</title>
+
+    <style>
+        /* ================= INHERITED STYLES START ================= */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f3f4f6;
+            color: #222;
+        }
+
+        .layout {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 270px;
+            background: #1f2937;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            padding: 18px 14px;
+            transition: width 0.3s ease;
+        }
+
+        .sidebar.collapsed {
+            width: 75px;
+            padding: 18px 10px;
+        }
+
+        .sidebar-top {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .back-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #111827;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .hamburger {
+            margin-left: auto;
+            font-size: 22px;
+            cursor: pointer;
+            opacity: 0.9;
+            user-select: none;
+        }
+
+        .search-box {
+            background: #111827;
+            border-radius: 30px;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            transition: 0.3s;
+        }
+
+        .search-box input {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #fff;
+            width: 100%;
+            font-size: 14px;
+        }
+
+        .search-box span {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .sidebar.collapsed .search-box input {
+            display: none;
+        }
+
+        .nav {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-top: 10px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+            opacity: 0.9;
+        }
+
+        .nav-item:hover {
+            background: #111827;
+            opacity: 1;
+        }
+
+        .nav-item .left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-item .icon-box {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            background: #111827;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        /* Active State Logic Updated for Calendar Page */
+        .nav-item.active .icon-box {
+            background: #7c3aed;
+        }
+
+        .nav-item.active {
+            opacity: 1;
+        }
+
+        .sidebar.collapsed .nav-item span.label {
+            display: none;
+        }
+
+        .sidebar.collapsed .nav-item {
+            justify-content: center;
+        }
+
+        .sidebar.collapsed .nav-item .left {
+            justify-content: center;
+            width: 100%;
+        }
+
+        .sidebar.collapsed .nav-item .right {
+            display: none;
+        }
+
+        /* Main */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: auto;
+        }
+
+        /* Header */
+        .header {
+            background: #ffffff;
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .pill {
+            padding: 7px 16px;
+            border: 1px solid #c4b5fd;
+            color: #6d28d9;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            background: #fff;
+        }
+
+        .circle-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            background: red;
+            border-radius: 50%;
+            position: absolute;
+            top: 5px;
+            right: 6px;
+        }
+
+        .profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-left: 10px;
+            border-left: 1px solid #e5e7eb;
+        }
+
+        .profile img {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #e5e7eb;
+        }
+
+        .profile .name {
+            font-size: 13px;
+            font-weight: 700;
+            color: #111827;
+            line-height: 1.1;
+        }
+
+        .profile .adm {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        /* Content */
+        .content {
+            padding: 22px 26px;
+            flex: 1;
+            /* Ensure content stretches */
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 22px;
+            padding: 14px 26px;
+            display: flex;
+            justify-content: space-between;
+            color: #6b7280;
+            font-size: 13px;
+            border-top: 1px solid #e5e7eb;
+            background: #fff;
+        }
+
+        /* ================= INHERITED STYLES END ================= */
+
+        /* ================= CALENDAR SPECIFIC STYLES ================= */
+        .calendar-container {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            min-height: 600px;
+        }
+
+        .calendar-breadcrumb {
+            font-size: 12px;
+            color: #7c3aed;
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .calendar-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        /* LEGEND TABLE STYLE REMOVED */
+
+        .color-box {
+            width: 40px;
+            height: 40px;
+            display: inline-block;
+        }
+
+        .bg-purple {
+            background-color: #6a1b9a !important;
+            color: #fff;
+        }
+
+        .bg-red {
+            background-color: #dc2626 !important;
+            color: #fff;
+        }
+
+        .bg-yellow {
+            background-color: #facc15 !important;
+            color: #000;
+        }
+
+        .bg-blue {
+            background-color: #0ea5e9 !important;
+            color: #fff;
+        }
+
+        .calendar-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .calendar-nav {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 16px;
+            color: #374151;
+            font-weight: 600;
+        }
+
+        .nav-btn {
+            cursor: pointer;
+            user-select: none;
+            font-weight: bold;
+            color: #4b5563;
+        }
+
+        .nav-btn:hover {
+            color: #111827;
+        }
+
+        .today-btn {
+            position: absolute;
+            right: 0;
+            background: #fffbeb;
+            /* Match Today Highlight */
+            color: #374151;
+            border: 1px solid #e5e7eb;
+            padding: 6px 14px;
+            border-radius: 4px;
+            font-size: 13px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .today-btn:hover {
+            background: #fef3c7;
+        }
+
+        /* Grid */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            border-top: 1px solid #e5e7eb;
+            border-left: 1px solid #e5e7eb;
+        }
+
+        .grid-cell {
+            border-right: 1px solid #e5e7eb;
+            border-bottom: 1px solid #e5e7eb;
+            min-height: 100px;
+            background: #fff;
+            padding: 8px;
+            position: relative;
+            transition: 0.2s;
+        }
+
+        .grid-cell:hover {
+            background: #fdfdfd;
+        }
+
+        .grid-header {
+            font-weight: 600;
+            text-align: center;
+            padding: 10px 0;
+            color: #374151;
+            background: #fff;
+            border-bottom: 1px solid #e5e7eb;
+            border-right: 1px solid #e5e7eb;
+            font-size: 14px;
+        }
+
+        .date-number {
+            font-size: 13px;
+            color: #374151;
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            font-weight: 500;
+            z-index: 2;
+        }
+
+        .event-label {
+            margin-top: 24px;
+            font-size: 11px;
+            line-height: 1.3;
+            font-weight: 600;
+            color: inherit;
+        }
+
+        .grid-cell.other-month {
+            background: #f9fafb;
+            color: #9ca3af;
+        }
+
+        .grid-cell.highlight-yellow {
+            background-color: #fffbeb;
+            /* Creamy yellow highlight for Today */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layout">
+
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-top">
+                <div class="back-btn">←</div>
+                <div class="hamburger" id="hamburger">≡</div>
+            </div>
+
+            <!-- SEARCH -->
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search" />
+                <span>🔍</span>
+            </div>
+
+            <div class="nav">
+                <a href="home2.html" class="nav-item" style="text-decoration:none; color:inherit;">
+                    <div class="left">
+                        <div class="icon-box">🏠</div>
+                        <span class="label">Home</span>
+                    </div>
+                </a>
+
+                <div class="nav-item">
+                    <div class="left">
+                        <div class="icon-box">👤</div>
+                        <span class="label">Profile</span>
+                    </div>
+                </div>
+
+                <div class="nav-item">
+                    <div class="left">
+                        <div class="icon-box">📅</div>
+                        <span class="label">Timetables</span>
+                    </div>
+                </div>
+
+                <!-- ACADEMIC CALENDAR ACTIVE -->
+                <div class="nav-item active">
+                    <div class="left">
+                        <div class="icon-box">🗓️</div>
+                        <span class="label">Academic Calendar</span>
+                    </div>
+                </div>
+
+                <div class="nav-item">
+                    <div class="left">
+                        <div class="icon-box">🧾</div>
+                        <span class="label">Attendance</span>
+                    </div>
+                </div>
+
+                <div class="nav-item">
+                    <div class="left">
+                        <div class="icon-box">📡</div>
+                        <span class="label">Curriculum / Academic Pathway</span>
+                    </div>
+                </div>
+
+                <div class="nav-item">
+                    <div class="left">
+                        <div class="icon-box">📝</div>
+                        <span class="label">Assessments</span>
+                    </div>
+                </div>
+
+                <div class="nav-item">
+                    <div class="left">
+                        <div class="icon-box">💬</div>
+                        <span class="label">Feedback And Surveys</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main -->
+        <main class="main">
+
+            <!-- Header -->
+            <header class="header">
+                <div class="header-title">St Joseph's University</div>
+
+                <div class="header-right">
+                    <div class="pill">STUDENT</div>
+
+                    <div class="circle-icon">
+                        🔔
+                        <div class="dot"></div>
+                    </div>
+
+                    <div class="circle-icon">⠿</div>
+
+                    <div class="profile">
+                        <img src="https://i.imgur.com/8Km9tLL.png" alt="profile" />
+                        <div>
+                            <div class="name">PRINCETINE XAV..</div>
+                            <div class="adm">Adm No: 233BCAC19</div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content -->
+            <section class="content">
+
+                <div class="calendar-container">
+                    <div class="calendar-breadcrumb">ACADEMIC CALENDAR</div>
+                    <div class="calendar-title">ACADEMIC CALENDAR</div>
+                    <!-- Legend Removed as per request -->
+
+                    <div class="calendar-header">
+                        <div class="calendar-nav">
+                            <div class="nav-btn" id="prevYear">&laquo;</div>
+                            <div class="nav-btn" id="prevMonth">&lsaquo;</div>
+                            <div id="monthYearDisplay">January 2026</div>
+                            <div class="nav-btn" id="nextMonth">&rsaquo;</div>
+                            <div class="nav-btn" id="nextYear">&raquo;</div>
+                        </div>
+                        <button class="today-btn">Today</button>
+                    </div>
+
+                    <div class="calendar-grid" id="calendarGrid">
+                        <!-- Grid Headers -->
+                        <div class="grid-header">Sun</div>
+                        <div class="grid-header">Mon</div>
+                        <div class="grid-header">Tue</div>
+                        <div class="grid-header">Wed</div>
+                        <div class="grid-header">Thu</div>
+                        <div class="grid-header">Fri</div>
+                        <div class="grid-header">Sat</div>
+                        <!-- Dynamic Days will be inserted here -->
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- Footer -->
+            <footer class="footer">
+                <div>Powered by Linways Technologies Pvt.Ltd.</div>
+                <div>Linways AMS AUTONOMOUS ULTIMATE_PLUS v4.4.1.1</div>
+            </footer>
+
+        </main>
+    </div>
+
+    <script>
+        // Sidebar collapse toggle
+        const sidebar = document.getElementById("sidebar");
+        const hamburger = document.getElementById("hamburger");
+
+        hamburger.addEventListener("click", () => {
+            sidebar.classList.toggle("collapsed");
+        });
+
+        // Calendar Logic
+        const calendarGrid = document.getElementById('calendarGrid');
+        const monthYearDisplay = document.getElementById('monthYearDisplay');
+        const prevMonthBtn = document.getElementById('prevMonth');
+        const nextMonthBtn = document.getElementById('nextMonth');
+        const prevYearBtn = document.getElementById('prevYear');
+        const nextYearBtn = document.getElementById('nextYear');
+
+        let currentDate = new Date(2026, 0, 1); // Start at Jan 2026
+
+        // Event Data (Month is 0-indexed: Jan=0, Feb=1)
+        const events = {
+            "2026-0": {
+                1: { type: "red", label: "New Year" },
+                14: { type: "red", label: "Makara Sankranti" },
+                26: { type: "red", label: "Republic Day" },
+                12: { type: "yellow", label: "Sports Day" }
+            },
+            "2026-1": {
+                20: { type: "purple", label: "University Holiday" },
+                11: { type: "yellow", label: "No Classes" }
+            },
+            "2026-2": {
+                5: { type: "blue", label: "Day Order Change" }
+            },
+            // July 2026
+            "2026-6": {
+                6: { type: "red", label: "Last Day of Moharam" },
+                7: { type: "red", label: "Bakrid" },
+                1: { type: "yellow", label: "Selection for University Sports team" },
+                15: { type: "yellow", label: "Selection for University Sports team" }
+            },
+            // August 2026
+            "2026-7": {
+                15: { type: "red", label: "Independence Day" },
+                27: { type: "red", label: "Varasiddhi Vinayaka Vrata" }, // Example from image
+                11: { type: "blue", label: "Order of Thu timetable" },
+                4: { type: "yellow", label: "PEGASUS intramurals Phase-1" }
+            },
+            // September 2026
+            "2026-8": {
+                5: { type: "red", label: "Eid-Milad" },
+                21: { type: "red", label: "Mahalaya Amavasya" },
+                8: { type: "purple", label: "Nativity of the Blessed Virgin Mary" },
+                13: { type: "blue", label: "Order of Mon timetable" },
+                16: { type: "blue", label: "Order of Fri timetable" },
+                27: { type: "yellow", label: "Convocation day" }
+            },
+            // October 2026
+            "2026-9": {
+                2: { type: "red", label: "Gandhi Jayanthi" },
+                1: { type: "red", label: "Mahanavami/Ayudhapooja" },
+                7: { type: "red", label: "Maharshi Valmiki Jayanthi" },
+                20: { type: "red", label: "Naraka Chaturdashi" },
+                22: { type: "red", label: "Balipadyami, Deepavali" },
+                6: { type: "blue", label: "Order of Tue timetable" },
+                10: { type: "blue", label: "Order of Wed timetable" }
+            },
+            // November 2026
+            "2026-10": {
+                1: { type: "red", label: "Kannada Rajyotsava" },
+                8: { type: "red", label: "Kanakadasa Jayanthi" }
+            }
+        };
+
+        const colorDescriptions = {
+            "purple": "Holidays declared by the University",
+            "red": "Public holidays",
+            "yellow": "Working days - no regular classes",
+            "blue": "Day order is changed for these days"
+        };
+
+        function renderCalendar(date) {
+            const year = date.getFullYear();
+            const month = date.getMonth();
+
+            // Update Header
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            monthYearDisplay.textContent = `${monthNames[month]} ${year}`;
+
+            // Clear existing days (keep headers)
+            const headers = calendarGrid.querySelectorAll('.grid-header');
+            calendarGrid.innerHTML = '';
+            headers.forEach(h => calendarGrid.appendChild(h));
+
+            // Calculate days
+            const firstDayOfMonth = new Date(year, month, 1);
+            const lastDayOfMonth = new Date(year, month + 1, 0);
+            const startDayIndex = firstDayOfMonth.getDay(); // 0 (Sun) to 6 (Sat)
+            const totalDays = lastDayOfMonth.getDate();
+
+            // Previous month filler
+            const prevMonthLastDay = new Date(year, month, 0).getDate();
+            for (let i = startDayIndex - 1; i >= 0; i--) {
+                const cell = document.createElement('div');
+                cell.classList.add('grid-cell', 'other-month');
+                cell.innerHTML = `<span class="date-number">${prevMonthLastDay - i}</span>`;
+                calendarGrid.appendChild(cell);
+            }
+
+            // Current month days
+            const monthKey = `${year}-${month}`;
+            const monthEvents = events[monthKey] || {};
+
+            const today = new Date();
+            const isCurrentMonth = today.getFullYear() === year && today.getMonth() === month;
+
+            for (let i = 1; i <= totalDays; i++) {
+                const cell = document.createElement('div');
+                cell.classList.add('grid-cell');
+
+                // Check for event
+                const event = monthEvents[i];
+
+                // Check for Today
+                if (isCurrentMonth && i === today.getDate()) {
+                    cell.classList.add('highlight-yellow');
+                    if (!event) {
+                        cell.title = "Today";
+                    }
+                }
+
+                if (event) {
+                    if (event.type === 'purple') cell.classList.add('bg-purple');
+                    if (event.type === 'red') cell.classList.add('bg-red');
+                    if (event.type === 'yellow') cell.classList.add('bg-yellow');
+                    if (event.type === 'blue') cell.classList.add('bg-blue');
+
+                    // Add tooltip title for hover
+                    const description = colorDescriptions[event.type] || "";
+                    cell.title = `${description} (${event.label})`;
+
+                    cell.innerHTML = `<span class="date-number">${i}</span><div class="event-label">${event.label}</div>`;
+                } else {
+                    cell.innerHTML = `<span class="date-number">${i}</span>`;
+                }
+
+                calendarGrid.appendChild(cell);
+            }
+
+            // Next month filler
+            const currentFilled = startDayIndex + totalDays;
+            const toFill = 42 - currentFilled;
+
+            for (let i = 1; i <= toFill; i++) {
+                const cell = document.createElement('div');
+                cell.classList.add('grid-cell', 'other-month');
+                cell.innerHTML = `<span class="date-number">${i}</span>`;
+                calendarGrid.appendChild(cell);
+            }
+        }
+
+        renderCalendar(currentDate);
+
+        // Nav listeners
+        prevMonthBtn.addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            renderCalendar(currentDate);
+        });
+
+        nextMonthBtn.addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            renderCalendar(currentDate);
+        });
+
+        prevYearBtn.addEventListener('click', () => {
+            currentDate.setFullYear(currentDate.getFullYear() - 1);
+            renderCalendar(currentDate);
+        });
+
+        nextYearBtn.addEventListener('click', () => {
+            currentDate.setFullYear(currentDate.getFullYear() + 1);
+            renderCalendar(currentDate);
+        });
+
+        document.querySelector('.today-btn').addEventListener('click', () => {
+            currentDate = new Date();
+            renderCalendar(currentDate);
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Research & Development Cell | St Joseph's University</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* --- SHARED STYLES (from sju.html) --- */
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background-color: #f8f9fa;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    /* --- HEADER --- */
+    .top-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 30px;
+      background-color: #fff;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      cursor: pointer;
+    }
+
+    .logo h1 {
+      font-size: 22px;
+      margin: 0;
+      color: #002147;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    nav a {
+      margin-left: 20px;
+      text-decoration: none;
+      color: #002147;
+      font-weight: 600;
+      font-size: 14px;
+      transition: color 0.3s;
+    }
+
+    nav a:hover {
+      color: #f5b400;
+    }
+
+    /* --- BANNER --- */
+    .page-banner {
+      background-color: #f6f6f6;
+      border-bottom: 4px solid #f5b400;
+      /* Gold/Orange accent */
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    .page-banner h2 {
+      color: #002147;
+      font-size: 32px;
+      margin: 0 0 10px 0;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .breadcrumb {
+      font-size: 14px;
+      color: #666;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .breadcrumb a {
+      text-decoration: none;
+      color: #333;
+    }
+
+    .breadcrumb span {
+      margin: 0 5px;
+      color: #aaa;
+    }
+
+    /* --- VISION & MISSION SECTION --- */
+    .vision-mission-section {
+      padding: 60px 20px;
+      background: #fff;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .vm-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+
+    .vm-box {
+      flex: 1;
+      min-width: 300px;
+      padding: 20px;
+    }
+
+    .vm-box h3 {
+      color: #e67e22;
+      /* Orange color from screenshot */
+      font-size: 24px;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      font-weight: 700;
+    }
+
+    .vm-box p {
+      font-size: 15px;
+      color: #444;
+      text-align: justify;
+      line-height: 1.7;
+    }
+
+    .vm-center-img {
+      width: 200px;
+      flex-shrink: 0;
+      text-align: center;
+    }
+
+    .vm-center-img img {
+      width: 100%;
+      height: auto;
+      transform: rotate(-5deg);
+      /* Slight tilt for style */
+    }
+
+    /* --- MESSAGES SECTION --- */
+    .messages-section {
+      padding: 60px 20px;
+      background: #fff;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .section-title {
+      text-align: center;
+      color: #e67e22;
+      font-size: 28px;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-bottom: 50px;
+    }
+
+    .message-card {
+      display: flex;
+      gap: 40px;
+      margin-bottom: 60px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 40px;
+    }
+
+    .message-card:last-child {
+      border-bottom: none;
+    }
+
+    .msg-sidebar {
+      width: 250px;
+      flex-shrink: 0;
+      text-align: center;
+    }
+
+    .msg-sidebar img {
+      width: 100%;
+      height: 300px;
+      /* Fixed height for portrait look */
+      object-fit: cover;
+      border-radius: 4px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      margin-bottom: 15px;
+    }
+
+    .msg-name {
+      font-weight: 700;
+      color: #000;
+      font-size: 16px;
+      margin-bottom: 5px;
+    }
+
+    .msg-title {
+      font-weight: 600;
+      color: #555;
+      font-size: 14px;
+    }
+
+    .msg-content {
+      flex: 1;
+      font-size: 15px;
+      text-align: justify;
+      color: #333;
+    }
+
+    .msg-content p {
+      margin-bottom: 15px;
+    }
+
+    /* Footer structure similar to sju.html */
+    footer {
+      background: #002147;
+      color: white;
+      text-align: center;
+      padding: 20px;
+      font-size: 14px;
+      margin-top: 50px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .vm-container {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .message-card {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .msg-sidebar {
+        width: 200px;
+      }
+
+      .msg-sidebar img {
+        height: 240px;
+      }
+
+      .top-header {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      nav {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+      }
+
+      nav a {
+        margin: 0 10px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header class="top-header">
+    <div class="logo">
+      <img
+        src="https://upload.wikimedia.org/wikipedia/en/thumb/8/86/St_Joseph%27s_University_Bengaluru_logo.png/220px-St_Joseph%27s_University_Bengaluru_logo.png"
+        width="50" alt="SJU Logo">
+      <h1>St Joseph's University</h1>
+    </div>
+    <nav>
+      <a href="sju.html">Home</a>
+      <a href="admissions-2026.html">Admissions</a>
+      <a href="login.html">Login</a>
+      <a href="research.html" style="color:#f5b400;">Research</a> <!-- Active -->
+    </nav>
+  </header>
+
+  <!-- BANNER -->
+  <div class="page-banner">
+    <h2>Research & Development Cell</h2>
+    <div class="breadcrumb">
+      <a href="sju.html">Home</a> <span>»</span> Research & Development Cell
+    </div>
+  </div>
+
+  <!-- VISION MISSION -->
+  <section class="vision-mission-section">
+    <div class="vm-container">
+      <!-- Vision -->
+      <div class="vm-box">
+        <h3>Vision</h3>
+        <p>To investigate, analyse and assess varied and varying domains of reality in nature and society through
+          research characterised by academic excellence and marked by relevance to the human community and to the
+          biosphere as a whole.</p>
+      </div>
+
+      <!-- Center Image (Signpost Placeholder) -->
+      <div class="vm-center-img">
+        <!-- Using a placeholder for the signpost image -->
+        <img src="https://cdn-icons-png.flaticon.com/512/2857/2857433.png" alt="Mission Vision Signpost">
+      </div>
+
+      <!-- Mission -->
+      <div class="vm-box">
+        <h3>Mission</h3>
+        <p>To nurture the habit of enquiry among the students, scholars and faculty of St Joseph’s University (SJU), and
+          to promote state-of-the-art academic research in diverse fields in order to realise ideas, policies and
+          technology for the betterment of humankind.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- MESSAGES -->
+  <section class="messages-section">
+    <div class="section-title">Messages</div>
+
+    <!-- Message 1: Chancellor -->
+    <div class="message-card">
+      <div class="msg-sidebar">
+        <!-- Placeholder for Fr Dionysius Vaz SJ -->
+        <img src="https://via.placeholder.com/300x350/003366/ffffff?text=Fr+Dionysius" alt="Fr Dionysius Vaz SJ">
+        <div class="msg-name">Fr Dionysius Vaz SJ</div>
+        <div class="msg-title">The Chancellor</div>
+      </div>
+      <div class="msg-content">
+        <p>A Jesuit carries out research as a pilgrim involved in Community-Based Participatory Action Research (CBPAR)
+          through an Ignatian lens. Throughout its history, the Jesuit order has been filled with scientific thinkers
+          who have helped shape our understanding of the world. They have made contributions to scientific conversations
+          and discovery. Pope Francis and the Jesuit Universal Apostolic Preferences too emphasise "care for our common
+          home" and promotion of the dignity of environmental migrants.</p>
+        <p>The Jesuits of Karnataka province have before them the inspirational legacy of veteran scientists like Fr
+          Cecil Saldanha (taxonomical research) and Fr Leo D'Souza (molecular biology and tissue culture), as also
+          scholars like Fr Devasahayam (English literature), Fr Prashant Madtha (Kannada language) and Fr Ambrose Pinto
+          (political thought and Dalit studies).</p>
+        <p>I hope that, besides excelling in academic research, our researchers at SJU will form partnerships with local
+          communities and grassroots movements working for social equity, especially in the vital area of food and water
+          security.</p>
+      </div>
+    </div>
+
+    <!-- Message 2: Vice Chancellor -->
+    <div class="message-card">
+      <div class="msg-sidebar">
+        <!-- Placeholder for Fr Dr Victor Lobo SJ -->
+        <img src="https://via.placeholder.com/300x350/003366/ffffff?text=Fr+Dr+Victor" alt="Fr Dr Victor Lobo SJ">
+        <div class="msg-name">Fr Dr Victor Lobo SJ</div>
+        <div class="msg-title">The Vice Chancellor</div>
+      </div>
+      <div class="msg-content">
+        <p>It is a matter of great joy that, following the upgradation of St. Joseph’s College to a University, we now
+          have a separate institute within SJU to focus on research. I am confident that SJRI will play a transformative
+          role in promoting a culture of research within SJU – research that meets the highest standards of academic
+          rigour while at the same time being socially relevant.</p>
+        <p>While we are all grateful for the vast body of available knowledge that has been produced by generations of
+          scholars and researchers all over the world, we find ourselves situated at a time in history where there are
+          numerous unknowns in every domain that arouse our curiosity. It is towards these knowledge gaps that current
+          research needs to be directed. I am hopeful that SJRI will serve as a vital catalyst in the process of
+          engendering new knowledge in the various disciplines and inter-disciplinary domains.</p>
+        <p>I hope that this noble endeavour of pushing back the frontiers of existing knowledge will enrich, transform
+          and expand the academic horizons of our University in the years to come.</p>
+      </div>
+    </div>
+
+    <!-- Message 3: Director -->
+    <div class="message-card">
+      <div class="msg-sidebar">
+        <!-- Placeholder for Rev Dr Roshan Castelino SJ -->
+        <img src="https://via.placeholder.com/300x350/003366/ffffff?text=Rev+Dr+Roshan"
+          alt="Rev Dr Roshan Castelino SJ">
+        <div class="msg-name">Rev Dr Roshan Castelino SJ</div>
+        <div class="msg-title">Director of Research<br>St Joseph's Research Institute</div>
+      </div>
+      <div class="msg-content">
+        <p>The primary objective of SJRI is to enable and facilitate research at SJU as well as to set benchmarks and
+          standards for the same. The hallmark of a University is the generation of knowledge through research in
+          diverse domains carried out by its faculty and students. Through their engagements, facilitated by SJRI, we
+          wish to create a scholarly community that spans the widest range of academic domains, making a positive
+          difference in the world.</p>
+        <p>To enable this, SJRI, in addition to facilitating doctoral programmes, would provide state-of-the-art
+          infrastructure, industry-academia interface, seed money funding for faculty at the early stages of their
+          careers, faculty training programmes in research-related areas, as well as seminars and symposia on current
+          thrust areas.</p>
+        <p>It is my earnest hope that students and faculty will wholeheartedly participate in the various programmes
+          offered by SJRI and thus make possible a thriving culture of research at SJU.</p>
+      </div>
+    </div>
+
+  </section>
+
+  <footer>
+    <p>&copy; 2026 St Joseph's University. All Rights Reserved.</p>
+  </footer>
+
+</body>
+
+</html>

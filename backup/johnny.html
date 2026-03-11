@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Johnson Akash | St Joseph's University</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; 
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #003366 0%, #00509e 100%);
+      min-height: 100vh;
+      color: #333;
+    }
+    .profile-container {
+      background: white; 
+      padding: 50px; 
+      width: 100%; 
+      max-width: 1200px;
+      margin: 40px auto; 
+      border-radius: 20px; 
+      box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+    }
+    .header {
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center;
+      margin-bottom: 30px; 
+      padding-bottom: 25px; 
+      border-bottom: 4px solid #003366;
+    }
+    .stats-grid {
+      display: grid; 
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px; 
+      margin-top: 30px;
+    }
+    .stat-card {
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      padding: 30px; 
+      border-radius: 15px; 
+      text-align: center; 
+      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+      border: 1px solid rgba(255,255,255,0.5);
+    }
+    .stat-card h3 { 
+      color: #28a745; 
+      margin: 0 0 12px 0; 
+      font-size: 32px; 
+      font-weight: 800; 
+    }
+    .stat-card p { 
+      margin: 0; 
+      color: #666; 
+      font-weight: 600; 
+      font-size: 16px;
+    }
+    .table-container { 
+      background: #f8f9fa; 
+      padding: 25px; 
+      border-radius: 15px; 
+      margin-top: 20px;
+      border: 1px solid #dee2e6;
+    }
+    table { 
+      width: 100%; 
+      border-collapse: collapse; 
+      font-size: 15px; 
+    }
+    th, td { 
+      padding: 15px; 
+      text-align: left; 
+      border-bottom: 1px solid #dee2e6; 
+    }
+    th { 
+      background: #003366; 
+      color: white; 
+      font-weight: 700; 
+    }
+    tr:hover { 
+      background: #e9ecef; 
+    }
+    .btn-danger {
+      background: #dc3545; 
+      padding: 12px 24px; 
+      color: white; 
+      border: none;
+      border-radius: 10px; 
+      cursor: pointer; 
+      font-weight: 700;
+    }
+    @media (max-width: 768px) {
+      .stats-grid { grid-template-columns: 1fr; }
+      .profile-container { margin: 20px; padding: 30px; }
+      .header { flex-direction: column; gap: 15px; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+  <div class="profile-container">
+    <div class="header">
+      <div>
+        <h1 style="color: #003366; margin: 0 0 5px 0; font-size: 36px">
+          Welcome back, <strong>Johnson Akash!</strong> 👋
+        </h1>
+        <p style="color: #666; margin: 0; font-size: 18px">
+          SJU/BCA/2023/026 | BCA (Sem 3) | 2023
+        </p>
+      </div>
+      
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h3>8.45</h3>
+        <p>CGPA / 10</p>
+      </div>
+      <div class="stat-card">
+        <h3>88%</h3>
+        <p>Attendance</p>
+      </div>
+      <div class="stat-card">
+        <h3>8.45</h3>
+        <p>Current SGPA</p>
+      </div>
+      <div class="stat-card">
+        <h3>School of Information Technology</h3>
+        <p>Department</p>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 40px">
+      <div>
+        <h3 style="color: #003366; border-bottom: '4px solid #003366'; padding-bottom: 15px; margin-bottom: 25px">
+          📋 Personal Details & Attendance
+        </h3>
+        <div style="background: #f8f9fa; padding: 25px; border-radius: 15px; margin-bottom: 25px">
+          <p><strong>Register No:</strong> 233bcac26</p>
+          <p><strong>Roll No:</strong> SJU/BCA/2023/026</p>
+          <p><strong>Phone:</strong> +91 8976543210</p>
+          <p><strong>Email:</strong> johnson.akash@sju.edu.in</p>
+        </div>
+        <div class="table-container">
+          <h4 style="color: #28a745; margin: 0 0 25px 0; font-size: 20px">
+            📊 Overall Attendance: <strong>88%</strong>
+          </h4>
+          <table>
+            <thead>
+              <tr>
+                <th>Subject Code</th>
+                <th>Subject</th>
+                <th>Held</th>
+                <th>Attended</th>
+                <th>Attendance</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td style="font-family: monospace">BCA301</td><td>Python Programming</td><td>45</td><td>41</td><td style="color: #28a745; font-weight: 700">91%</td></tr>
+              <tr><td style="font-family: monospace">BCA302</td><td>Data Structures</td><td>42</td><td>38</td><td style="color: #28a745; font-weight: 700">90%</td></tr>
+              <tr><td style="font-family: monospace">BCA303</td><td>Database Systems</td><td>38</td><td>33</td><td style="color: #28a745; font-weight: 700">87%</td></tr>
+              <tr><td style="font-family: monospace">BCA304</td><td>Web Technologies</td><td>40</td><td>36</td><td style="color: #28a745; font-weight: 700">90%</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div>
+        <h3 style="color: #003366; border-bottom: 4px solid #003366; padding-bottom: 15px; margin-bottom: 25px">
+          📈 Academic & Fees Status
+        </h3>
+        <div style="background: #e8f5e9; padding: 35px; border-radius: 15px; text-align: center; margin-bottom: 25px">
+          <h2 style="color: #28a745; margin: 0 0 15px 0; font-size: 40px">8.45/10</h2>
+          <p style="font-size: 24px; color: #155724; margin: 0; font-weight: 700">FIRST CLASS</p>
+        </div>
+        <div class="table-container" style="background: #f8d7da; border: 2px solid #f5c6cb">
+          <h4 style="margin: 0 0 20px 0; color: #dc3545">
+            💰 Semester Fees: <strong>₹45,000</strong>
+          </h4>
+          <div style="font-size: 22px; font-weight: 800; margin-bottom: 20px">⭕ PENDING</div>
+          <p style="margin: 0 0 15px 0; color: #666">Due Date: <strong>Feb 28, 2026</strong></p>
+          <button style="background: linear-gradient(135deg, #ffc107, #ff8c00); color: #333; border: none; padding: 15px 30px; border-radius: 10px; cursor: pointer; font-weight: 700; width: 100%; font-size: 16px" onclick="alert('✅ Payment Successful! Status updated.')">
+            💳 PAY NOW
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

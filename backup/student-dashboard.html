@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        /* Reuse your previous background and header styles here */
+        body { margin: 0; font-family: Arial; background-color: #d8d5d5; }
+
+        /* CHATBOT BOX - Styled to match your new image */
+        .chat-container {
+            position: fixed; bottom: 30px; right: 30px;
+            width: 350px; background: white; border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2); overflow: hidden;
+            display: flex; flex-direction: column;
+        }
+
+        .chat-header {
+            background: #002147; color: white; padding: 15px;
+            display: flex; justify-content: space-between; font-weight: bold;
+        }
+
+        .chat-body { height: 300px; padding: 15px; background: #fff; }
+        
+        .bot-msg {
+            background: #f1f1f1; padding: 12px; border-radius: 12px;
+            max-width: 85%; font-size: 14px; color: #333; line-height: 1.4;
+        }
+
+        /* YELLOW QUICK ACTION BUTTONS */
+        .quick-actions {
+            display: flex; justify-content: space-around;
+            padding: 10px; background: #f9f9f9; border-top: 1px solid #eee;
+        }
+
+        .action-btn {
+            background: #f5b400; border: none; padding: 8px 12px;
+            border-radius: 20px; font-weight: bold; font-size: 11px;
+            cursor: pointer; text-transform: uppercase;
+        }
+
+        /* INPUT AREA */
+        .chat-input-area {
+            display: flex; padding: 15px; gap: 10px; border-top: 1px solid #eee;
+        }
+
+        .chat-input-area input {
+            flex: 1; padding: 10px; border-radius: 25px;
+            border: 1px solid #ccc; outline: none;
+        }
+
+        .send-btn {
+            background: #002147; color: white; border: none;
+            width: 40px; height: 40px; border-radius: 50%; cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="chat-container">
+    <div class="chat-header">
+        <span>SJU Digital Assistant</span>
+        <span>✖</span>
+    </div>
+
+    <div class="chat-body">
+        <div class="bot-msg">
+            Welcome back! Check our college highlights above. Use buttons below for student records.
+        </div>
+    </div>
+
+    <div class="quick-actions">
+        <button class="action-btn" onclick="location.href='index.html'">Home</button>
+        <button class="action-btn">Attendance</button>
+        <button class="action-btn">Fees</button>
+        <button class="action-btn">Result</button>
+    </div>
+
+    <div class="chat-input-area">
+        <input type="text" placeholder="Type 'Fees', 'Result'...">
+        <button class="send-btn">➤</button>
+    </div>
+</div>
+
+</body>
+</html>

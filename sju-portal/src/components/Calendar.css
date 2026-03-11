@@ -1,0 +1,150 @@
+/* ================= CALENDAR SPECIFIC STYLES ================= */
+.calendar-container {
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    min-height: 600px;
+}
+
+.calendar-breadcrumb {
+    font-size: 12px;
+    color: #7c3aed;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.calendar-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+}
+
+.calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.calendar-nav {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 16px;
+    color: #374151;
+    font-weight: 600;
+}
+
+.nav-btn {
+    cursor: pointer;
+    user-select: none;
+    font-weight: bold;
+    color: #4b5563;
+}
+
+.nav-btn:hover {
+    color: #111827;
+}
+
+.today-btn {
+    position: absolute;
+    right: 0;
+    background: #fffbeb;
+    color: #374151;
+    border: 1px solid #e5e7eb;
+    padding: 6px 14px;
+    border-radius: 4px;
+    font-size: 13px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.today-btn:hover {
+    background: #fef3c7;
+}
+
+/* Grid */
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    border-top: 1px solid #e5e7eb;
+    border-left: 1px solid #e5e7eb;
+}
+
+.grid-cell {
+    border-right: 1px solid #e5e7eb;
+    border-bottom: 1px solid #e5e7eb;
+    min-height: 100px;
+    background: #fff;
+    padding: 8px;
+    position: relative;
+    transition: 0.2s;
+}
+
+.grid-cell:hover {
+    background: #fdfdfd;
+}
+
+.grid-header {
+    font-weight: 600;
+    text-align: center;
+    padding: 10px 0;
+    color: #374151;
+    background: #fff;
+    border-bottom: 1px solid #e5e7eb;
+    border-right: 1px solid #e5e7eb;
+    font-size: 14px;
+}
+
+.date-number {
+    font-size: 13px;
+    color: #374151;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    font-weight: 500;
+    z-index: 2;
+}
+
+.event-label {
+    margin-top: 24px;
+    font-size: 11px;
+    line-height: 1.3;
+    font-weight: 600;
+    color: inherit;
+}
+
+.grid-cell.other-month {
+    background: #f9fafb;
+    color: #9ca3af;
+}
+
+.grid-cell.highlight-yellow {
+    background-color: #fffbeb;
+}
+
+/* Event Colors */
+.bg-purple {
+    background-color: #6a1b9a !important;
+    color: #fff;
+}
+
+.bg-red {
+    background-color: #dc2626 !important;
+    color: #fff;
+}
+
+.bg-yellow {
+    background-color: #facc15 !important;
+    color: #000;
+}
+
+.bg-blue {
+    background-color: #0ea5e9 !important;
+    color: #fff;
+}

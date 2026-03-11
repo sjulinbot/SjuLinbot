@@ -1,0 +1,328 @@
+/* Global Styles specific to Library Page wrapper to avoid global pollution if possible, 
+   but adhering to user request structure */
+
+.library-page {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
+    background-color: #f9f9f9;
+}
+
+.library-page a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.library-page ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+/* Header */
+.library-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 40px;
+    background-image: url('../assets/library/header_bg.png');
+    background-color: #fff;
+    border-bottom: 4px solid #f5b400;
+    background-size: cover;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.fr-portrait {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #ddd;
+}
+
+.header-title h1 {
+    color: #002147;
+    font-size: 24px;
+    margin: 0;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.breadcrumb {
+    font-size: 14px;
+    color: #666;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-top: 5px;
+}
+
+.breadcrumb a {
+    text-decoration: none !important;
+    color: #333 !important;
+    cursor: pointer;
+}
+
+.breadcrumb span {
+    margin: 0 5px;
+    color: #aaa;
+}
+
+.header-right img {
+    height: 80px;
+    width: auto;
+}
+
+/* Navbar - The main navbar is handled by Header.jsx, so we don't style .navbar here unless intended for a sub-nav */
+
+/* Hero Section / Best Practices */
+.hero-section {
+    display: flex;
+    background-color: #fff;
+    height: 450px;
+    overflow: hidden;
+}
+
+.best-practices {
+    width: 300px;
+    background-color: #fff;
+    padding: 20px 0;
+    flex-shrink: 0;
+    z-index: 2;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.bp-title {
+    color: #e67e22;
+    /* Orange */
+    font-size: 18px;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-bottom: 1px dotted #ccc;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    display: inline-block;
+}
+
+.bp-list li {
+    padding: 12px 20px;
+    border-bottom: 1px dotted #eee;
+    font-size: 13px;
+    color: #444;
+    cursor: pointer;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+}
+
+.bp-list li:hover {
+    background-color: #f0f0f0;
+    color: #e67e22;
+}
+
+.bp-list li::before {
+    content: "»";
+    color: #e67e22;
+    font-weight: bold;
+    margin-right: 10px;
+    font-size: 16px;
+}
+
+.hero-slider {
+    flex-grow: 1;
+    position: relative;
+}
+
+.hero-slider img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Marquee Section */
+.notice-marquee {
+    background-color: #f1f1f1;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+}
+
+.notice-label {
+    background-color: #e0e0e0;
+    color: #333;
+    padding: 10px 20px;
+    font-weight: bold;
+    font-size: 14px;
+    text-transform: uppercase;
+    flex-shrink: 0;
+}
+
+.marquee-content {
+    flex-grow: 1;
+    overflow: hidden;
+    white-space: nowrap;
+    padding: 10px 0;
+    font-size: 13px;
+}
+
+/* Library @ A Glance */
+.glance-section {
+    padding: 40px;
+    background-color: #fff;
+}
+
+.section-title {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.section-title h2 {
+    color: #002147;
+    font-size: 24px;
+    text-transform: uppercase;
+    position: relative;
+    display: inline-block;
+    padding-bottom: 10px;
+}
+
+.section-title h2::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background-color: #e67e22;
+}
+
+.glance-container {
+    display: flex;
+    gap: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.glance-images {
+    display: flex;
+    flex-direction: column;
+    /* gap: 10px; */
+    /* Screenshots show perfectly stacked images */
+    width: 300px;
+    flex-shrink: 0;
+}
+
+.glance-images img {
+    width: 100%;
+    height: 180px;
+    margin-bottom: 10px;
+    /* Adjust based on ratio */
+    object-fit: cover;
+    display: block;
+}
+
+.glance-content {
+    flex-grow: 1;
+}
+
+.glance-list li {
+    margin-bottom: 15px;
+    font-size: 14px;
+    line-height: 1.6;
+    display: flex;
+    align-items: flex-start;
+}
+
+.glance-list li::before {
+    content: "»";
+    color: #e67e22;
+    font-weight: bold;
+    margin-right: 12px;
+    font-size: 16px;
+    line-height: 1.4;
+}
+
+/* Lower Section: News & Timings */
+.lower-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    padding: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: #f9f9f9;
+}
+
+.news-column,
+.timings-column {
+    flex: 1;
+    min-width: 300px;
+}
+
+.news-grid {
+    display: flex;
+    gap: 20px;
+}
+
+.news-card {
+    flex: 1;
+    background: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.news-card img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+}
+
+.news-title {
+    padding: 15px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #002147;
+    text-transform: uppercase;
+    line-height: 1.4;
+}
+
+.timings-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 5px;
+}
+
+.timings-table td {
+    background: #fff;
+    padding: 12px 20px;
+    font-size: 14px;
+    color: #002147;
+    border: 1px solid #eee;
+}
+
+.timings-table tr td:first-child {
+    font-weight: 500;
+}
+
+.closed {
+    color: red !important;
+}
+
+/* Scroll To Top */
+.scroll-top {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #c0392b;
+    color: white;
+    width: 40px;
+    height: 40px;
+    text-align: center;
+    line-height: 40px;
+    font-size: 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    z-index: 1000;
+}

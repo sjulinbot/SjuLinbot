@@ -1,0 +1,191 @@
+/* Research.css */
+.research-container {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: #333;
+    line-height: 1.6;
+    background-color: #f8f9fa;
+}
+
+/* --- BANNER --- */
+.page-banner {
+    background-color: #f6f6f6;
+    border-bottom: 4px solid #f5b400;
+    /* Gold/Orange accent */
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.page-banner h2 {
+    color: #002147;
+    font-size: 32px;
+    margin: 0 0 10px 0;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.breadcrumb {
+    font-size: 14px;
+    color: #666;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.breadcrumb a {
+    text-decoration: none;
+    color: #333;
+    cursor: pointer;
+}
+
+.breadcrumb span {
+    margin: 0 5px;
+    color: #aaa;
+}
+
+/* --- VISION & MISSION SECTION --- */
+.vision-mission-section {
+    padding: 60px 20px;
+    background: #fff;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.vm-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+.vm-box {
+    flex: 1;
+    min-width: 300px;
+    padding: 20px;
+}
+
+.vm-box h3 {
+    color: #e67e22;
+    /* Orange color */
+    font-size: 24px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+.vm-box p {
+    font-size: 15px;
+    color: #444;
+    text-align: justify;
+    line-height: 1.7;
+}
+
+.vm-center-img {
+    width: 200px;
+    flex-shrink: 0;
+    text-align: center;
+}
+
+.vm-center-img img {
+    width: 100%;
+    height: auto;
+    transform: rotate(-5deg);
+}
+
+/* --- MESSAGES SECTION --- */
+.messages-section {
+    padding: 60px 20px;
+    background: #fff;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.section-title {
+    text-align: center;
+    color: #e67e22;
+    font-size: 28px;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 50px;
+}
+
+.message-card {
+    display: flex;
+    gap: 40px;
+    margin-bottom: 60px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 40px;
+}
+
+.message-card:last-child {
+    border-bottom: none;
+}
+
+.msg-sidebar {
+    width: 250px;
+    flex-shrink: 0;
+    text-align: center;
+}
+
+.msg-sidebar img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 4px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 15px;
+}
+
+.msg-name {
+    font-weight: 700;
+    color: #000;
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+
+.msg-title {
+    font-weight: 600;
+    color: #555;
+    font-size: 14px;
+}
+
+.msg-content {
+    flex: 1;
+    font-size: 15px;
+    text-align: justify;
+    color: #333;
+}
+
+.msg-content p {
+    margin-bottom: 15px;
+}
+
+.research-footer {
+    background: #002147;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    font-size: 14px;
+    margin-top: 50px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .vm-container {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .message-card {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .msg-sidebar {
+        width: 200px;
+    }
+
+    .msg-sidebar img {
+        height: 240px;
+    }
+}

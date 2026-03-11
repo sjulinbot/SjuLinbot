@@ -1,0 +1,40 @@
+.admission-ticker-container {
+    width: 100%;
+    background-color: #aa1717;
+    /* SJU Red */
+    color: white;
+    overflow: hidden;
+    padding: 10px 0;
+    position: relative;
+    z-index: 50;
+}
+
+.admission-ticker-wrap {
+    width: 100%;
+    white-space: nowrap;
+}
+
+.admission-ticker-content {
+    display: inline-block;
+    white-space: nowrap;
+    animation: ticker-move 30s linear infinite;
+}
+
+.ticker-text {
+    display: inline-block;
+    padding-right: 50px;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+@keyframes ticker-move {
+    0% {
+        transform: translate3d(0, 0, 0);
+    }
+
+    100% {
+        transform: translate3d(-50%, 0, 0);
+        /* Move by 50% because we duplicated content */
+    }
+}

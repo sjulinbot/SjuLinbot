@@ -1,0 +1,111 @@
+.fees-container {
+    padding: 20px;
+    background-color: #fff;
+    min-height: 100%;
+}
+
+.fees-breadcrumb {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    font-weight: 500;
+}
+
+.fees-breadcrumb .active-crumb {
+    color: #7b4caf;
+    /* Purple matching the screenshot */
+    font-weight: 600;
+}
+
+.fees-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.fees-header h2 {
+    font-size: 16px;
+    color: #666;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin: 0;
+}
+
+.wallet-amount {
+    font-size: 14px;
+    color: #333;
+    font-weight: 600;
+    background-color: #f9fafb;
+    padding: 5px 10px;
+    border-radius: 4px;
+    border: 1px solid #e5e7eb;
+}
+
+.fees-table-container {
+    overflow-x: auto;
+}
+
+.fees-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    color: #4b5563;
+}
+
+.fees-table th {
+    text-align: center;
+    /* Center align headers */
+    padding: 15px 10px;
+    font-weight: 600;
+    color: #6b7280;
+    font-size: 12px;
+    text-transform: uppercase;
+    border-bottom: 1px solid #f3f4f6;
+    white-space: nowrap;
+}
+
+.fees-table td {
+    padding: 15px 10px;
+    text-align: center;
+    /* Center align data based on screenshot */
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.semester-cell {
+    color: #6b7280;
+}
+
+.red-asterisk {
+    color: red;
+    margin-left: 2px;
+}
+
+.pay-btn {
+    background-color: #9f7aea;
+    /* Light purple */
+    color: white;
+    border: none;
+    padding: 6px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.pay-btn:hover {
+    background-color: #805ad5;
+}
+
+.total-row td {
+    font-weight: 700;
+    color: #1f2937;
+    border-top: 1px solid #e5e7eb;
+}
+
+.total-row td:first-child {
+    text-align: left;
+    padding-left: 20px;
+}

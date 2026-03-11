@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Popup Chatbot</title>
+  <link rel="stylesheet" href="style1.css">
+</head>
+<body>
+
+<!-- CHATBOT ICON -->
+<div id="chatbot-icon" onclick="openChatbot()">
+  🤖
+</div>
+
+<!-- CHATBOT WINDOW -->
+<div id="chatbot-container">
+
+  <div class="chatbot-header">
+    <span>Chatbot</span>
+    <button onclick="closeChatbot()">✖</button>
+  </div>
+
+  <div id="chat-box"></div>
+
+  <div class="chat-buttons">
+    <button onclick="quickReply('attendance')">Attendance</button>
+    <button onclick="quickReply('fees')">Fees</button>
+    <button onclick="quickReply('result')">Result</button>
+    <button onclick="quickReply('admission')">Admission</button>
+  </div>
+
+  <div class="chat-input">
+    <input type="text" id="userInput" placeholder="Enter your text">
+    <button onclick="sendMessage()">Send</button>
+  </div>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

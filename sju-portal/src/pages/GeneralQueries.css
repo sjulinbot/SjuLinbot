@@ -1,0 +1,428 @@
+.gq-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100%;
+    background-image: url('../assets/library/slider_bg_final.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 2000;
+}
+
+.gq-header {
+    background-color: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(5px);
+    padding: 8px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 1px 10px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+}
+
+.gq-header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.gq-logo-img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
+
+.gq-header-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.gq-uni-badge-container {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.gq-university-name {
+    font-weight: 500;
+    color: #111;
+    font-size: 16px;
+}
+
+.gq-verified-badge {
+    display: flex;
+    align-items: center;
+    margin-top: 4px;
+}
+
+.gq-exit-btn {
+    background-color: #ffffff;
+    border: 1px solid #333;
+    color: #000;
+    padding: 4px 18px;
+    border-radius: 20px;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+}
+
+.gq-exit-btn:hover {
+    background-color: #f3f4f6;
+}
+
+.gq-chat-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 7%;
+    display: flex;
+    flex-direction: column;
+    background: transparent;
+}
+
+.gq-messages-container {
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.gq-message-wrapper {
+    display: flex;
+    width: 100%;
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.gq-message-wrapper.bot {
+    justify-content: flex-start;
+}
+
+.gq-message-wrapper.user {
+    justify-content: flex-end;
+}
+
+.gq-message {
+    max-width: 85%;
+    padding: 12px 18px;
+    border-radius: 12px;
+    position: relative;
+    font-size: 16px;
+    line-height: 1.6;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    display: block;
+}
+
+.gq-message.bot {
+    background-color: rgba(235, 235, 235, 0.95);
+    color: #000;
+    border-radius: 12px;
+    border-top-left-radius: 2px;
+    border: none;
+    align-self: flex-start;
+    font-size: 14px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Post-name Response Styles */
+.gq-post-name-response {
+    color: #333;
+}
+
+.gq-thanks-text {
+    font-size: 18px;
+    color: #666;
+    margin-bottom: 4px;
+}
+
+.gq-user-name-display {
+    font-size: 18px;
+    font-weight: 600;
+    color: #111;
+    margin-bottom: 12px;
+    text-transform: capitalize;
+}
+
+.gq-info-text {
+    font-size: 16px;
+    color: #444;
+    line-height: 1.4;
+    margin-bottom: 20px;
+}
+
+.gq-select-option-container {
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.gq-select-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    background: #ffffff;
+    /* White background as in the latest mockup */
+    border: none;
+    color: #008080;
+    /* Teal/Green text color */
+    font-size: 19px;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 12px 24px;
+    width: 100%;
+    transition: background 0.2s, transform 0.1s;
+}
+
+.gq-select-btn:hover {
+    background: #f8fafc;
+}
+
+.gq-select-btn:active {
+    transform: scale(0.98);
+}
+
+.gq-grid-icon {
+    color: #008080;
+    /* Ensure icon color matches text */
+    opacity: 0.9;
+}
+
+.gq-message.user {
+    background-color: #e1ffc7;
+    color: #000;
+    border-bottom-right-radius: 2px;
+}
+
+.gq-footer {
+    background-color: rgba(240, 242, 245, 0.1);
+    padding: 15px 7%;
+    display: flex;
+    justify-content: center;
+    z-index: 10;
+}
+
+.gq-input-container {
+    max-width: 1200px;
+    width: 100%;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.gq-input {
+    flex: 1;
+    padding: 10px 20px;
+    border-radius: 25px;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    background: #ffffff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.gq-input:focus {
+    border-color: #00a884;
+}
+
+.gq-send-btn {
+    background-color: #00a884;
+    color: white;
+    border: none;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.gq-send-btn:hover {
+    background-color: #008f72;
+}
+
+.gq-send-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* Modal Styles */
+.gq-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.gq-modal-content {
+    background: #111b21;
+    width: 100%;
+    max-width: 500px;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    color: #e9edef;
+    display: flex;
+    flex-direction: column;
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
+
+.gq-modal-header {
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    font-size: 18px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.gq-modal-close {
+    background: transparent;
+    border: none;
+    color: #8696a0;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+}
+
+.gq-modal-options {
+    padding: 20px 0;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.gq-modal-option {
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.gq-modal-option:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.gq-option-text {
+    font-size: 17px;
+    font-weight: 500;
+}
+
+.gq-modal-option.selected .gq-option-text {
+    color: #fff;
+}
+
+.gq-option-radio {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #8696a0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.gq-option-radio.checked {
+    border-color: #00a884;
+}
+
+.gq-option-radio-inner {
+    width: 10px;
+    height: 10px;
+    background: #00a884;
+    border-radius: 50%;
+}
+
+.gq-modal-footer {
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 80px;
+}
+
+.gq-selected-preview {
+    font-size: 15px;
+    color: #e9edef;
+    opacity: 0.9;
+}
+
+.gq-option-send-btn {
+    width: 50px;
+    height: 50px;
+    background: #333;
+    border: none;
+    border-radius: 50%;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: not-allowed;
+    transition: all 0.3s;
+}
+
+.gq-option-send-btn.active {
+    background: #00a884;
+    cursor: pointer;
+}
+
+.gq-option-send-btn svg {
+    margin-left: 2px;
+}
+
+@media (max-width: 768px) {
+    .gq-university-name {
+        font-size: 20px;
+    }
+
+    .gq-exit-btn {
+        font-size: 18px;
+        padding: 4px 12px;
+    }
+
+    .gq-chat-body,
+    .gq-footer {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+}

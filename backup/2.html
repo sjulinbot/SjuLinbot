@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admissions 2026</title>
+
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body{
+      background:#f4f6f8;
+      color:#222;
+    }
+
+    /* Header Banner */
+    .banner{
+      width:100%;
+      height:180px;
+      background: linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)),
+      url("https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=1400&auto=format&fit=crop") center/cover no-repeat;
+      display:flex;
+      align-items:flex-end;
+      padding:30px;
+    }
+
+    .banner h1{
+      color:white;
+      font-size:40px;
+      letter-spacing:1px;
+      font-weight:800;
+    }
+
+    /* Page container */
+    .container{
+      width:90%;
+      max-width:1100px;
+      margin:-40px auto 50px;
+      background:#fff;
+      border-radius:12px;
+      padding:30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+
+    .breadcrumb{
+      color:#666;
+      font-size:14px;
+      margin-bottom:18px;
+    }
+
+    .breadcrumb a{
+      color:#0b4f88;
+      font-weight:700;
+      text-decoration:none;
+      cursor:pointer;
+    }
+
+    .breadcrumb a:hover{
+      text-decoration:underline;
+    }
+
+    /* Instructions */
+    .section-title{
+      font-size:20px;
+      font-weight:700;
+      margin-bottom:15px;
+    }
+
+    ol{
+      padding-left:20px;
+      line-height:1.8;
+      font-size:15px;
+    }
+
+    .highlight-red{
+      color:red;
+      font-weight:700;
+      text-decoration: underline;
+    }
+
+    .link-blue{
+      color:#1a73e8;
+      text-decoration: underline;
+      cursor:pointer;
+    }
+
+    /* Button */
+    .center-btn{
+      display:flex;
+      justify-content:center;
+      margin-top:25px;
+    }
+
+    .go-btn{
+      background:#0b2c4a;
+      color:#f4a200;
+      font-weight:800;
+      padding:18px 40px;
+      border:none;
+      border-radius:14px;
+      font-size:20px;
+      cursor:pointer;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      transition: 0.2s ease;
+      letter-spacing:1px;
+    }
+
+    .go-btn:hover{
+      transform: translateY(-2px);
+    }
+
+    /* Programmes page */
+    .programmes-page{
+      display:none;
+    }
+
+    .tabs{
+      display:flex;
+      gap:12px;
+      justify-content:center;
+      margin:10px 0 18px;
+    }
+
+    .tab{
+      border:none;
+      padding:12px 28px;
+      border-radius:30px;
+      font-weight:800;
+      cursor:pointer;
+      background:#e9e9e9;
+      color:#333;
+      transition:0.2s ease;
+    }
+
+    .tab.active{
+      background:#f39c12;
+      color:#fff;
+    }
+
+    .note{
+      color:red;
+      font-size:14px;
+      line-height:1.5;
+      margin:12px 0 20px;
+      text-align:left;
+    }
+
+    /* Table */
+    .table-wrap{
+      width:100%;
+      overflow-x:auto;
+      border:1px solid #eee;
+      border-radius:10px;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      min-width:900px;
+    }
+
+    th, td{
+      padding:16px 12px;
+      border-bottom:1px solid #eee;
+      font-size:14px;
+      vertical-align:top;
+    }
+
+    th{
+      background:#fafafa;
+      font-weight:800;
+      text-align:left;
+    }
+
+    .school-row td{
+      background:#e58e00;
+      color:white;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:0.5px;
+      padding:10px 12px;
+    }
+
+    /* Action buttons */
+    .btn-small{
+      padding:8px 18px;
+      border-radius:22px;
+      border:2px solid #0b2c4a;
+      background:white;
+      color:#0b2c4a;
+      font-weight:800;
+      cursor:pointer;
+      margin-right:8px;
+      transition:0.2s;
+    }
+
+    .btn-small:hover{
+      background:#0b2c4a;
+      color:white;
+    }
+
+    .apply-btn{
+      padding:9px 22px;
+      border-radius:22px;
+      border:none;
+      background:#18a84b;
+      color:white;
+      font-weight:900;
+      cursor:pointer;
+      transition:0.2s;
+    }
+
+    .apply-btn:hover{
+      transform: scale(1.03);
+    }
+
+    /* Modal */
+    .modal{
+      position:fixed;
+      top:0; left:0;
+      width:100%;
+      height:100%;
+      background:rgba(0,0,0,0.55);
+      display:none;
+      justify-content:center;
+      align-items:center;
+      padding:15px;
+      z-index:999;
+    }
+
+    .modal-box{
+      width:100%;
+      max-width:520px;
+      background:#fff;
+      border-radius:16px;
+      padding:22px;
+      box-shadow:0 12px 40px rgba(0,0,0,0.25);
+    }
+
+    .modal-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:12px;
+    }
+
+    .modal-title{
+      font-size:18px;
+      font-weight:900;
+      color:#0b2c4a;
+    }
+
+    .close-btn{
+      border:none;
+      background:#eee;
+      padding:8px 12px;
+      border-radius:10px;
+      cursor:pointer;
+      font-weight:900;
+    }
+
+    .form-group{
+      margin:12px 0;
+    }
+
+    label{
+      font-size:14px;
+      font-weight:700;
+      display:block;
+      margin-bottom:6px;
+    }
+
+    input, select{
+      width:100%;
+      padding:12px;
+      border-radius:10px;
+      border:1px solid #ddd;
+      outline:none;
+      font-size:14px;
+    }
+
+    .submit-btn{
+      width:100%;
+      margin-top:12px;
+      padding:12px;
+      background:#0b2c4a;
+      color:#fff;
+      border:none;
+      border-radius:12px;
+      font-size:16px;
+      font-weight:900;
+      cursor:pointer;
+    }
+
+    .success-msg{
+      margin-top:12px;
+      color:#18a84b;
+      font-weight:800;
+      display:none;
+    }
+
+    /* ===================================================
+       NEW FEES TABLE DESIGN (YOUR GIVEN CODE - ADDED ONLY)
+       =================================================== */
+
+    /* Fee Modal Layout */
+    .fee-modal-box {
+      width: 100%;
+      max-width: 900px;
+      background: #fff;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      max-height: 90vh;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    .fee-scroll-content {
+      padding: 25px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    /* Table Styling */
+    .fee-structure-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    .fee-structure-table th, 
+    .fee-structure-table td {
+      border: 1px solid #e0e0e0;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .fee-structure-table th {
+      background: #f8f9fa;
+      color: #555;
+      font-weight: 600;
+    }
+
+    .fee-structure-table td:first-child {
+      text-align: left;
+      font-weight: bold;
+      color: #333;
+      background: #fdfdfd;
+    }
+
+    /* Additional Fees List */
+    .extra-fees-section {
+      margin-top: 25px;
+      border-top: 1px solid #eee;
+      padding-top: 15px;
+    }
+
+    .extra-fees-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: #444;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .fee-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px dashed #ddd;
+      font-size: 14px;
+    }
+
+    .fee-amount {
+      font-weight: 800;
+    }
+
+    .fee-footer-note {
+      font-size: 12px;
+      color: #666;
+      margin-top: 15px;
+      line-height: 1.5;
+    }
+
+    /* Gray Close Button */
+    .modal-footer-action {
+      padding: 15px 25px;
+      border-top: 1px solid #eee;
+      text-align: right;
+    }
+
+    .btn-close-gray {
+      background: #a5a9a5;
+      color: white;
+      border: none;
+      padding: 8px 25px;
+      border-radius: 20px;
+      font-weight: 700;
+      cursor: pointer;
+      text-transform: uppercase;
+      font-size: 12px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Banner -->
+  <div class="banner">
+    <h1>ADMISSIONS 2026</h1>
+  </div>
+
+  <!-- Admissions Page -->
+  <div class="container" id="admissionsPage">
+ <div class="breadcrumb">
+  <a onclick="location.reload()">Home</a> &gt;&gt;
+  <a onclick="goToAdmissions()">Admission 2026</a> &gt;&gt;
+  <span>Programmes</span>
+</div>
+
+
+    <div class="section-title">General Instructions:</div>
+
+    <ol>
+      <li>All admissions are online.</li>
+      <li class="highlight-red">
+        The Management / University does not collect any type of Capitation fees / Donation other than the fees mentioned above.
+      </li>
+      <li>
+        St Joseph's University, Bengaluru, does not authorise any individual or organisation to process admissions on its behalf.
+        Applicants are cautioned against receiving SMS/Email/, WhatsApp messages, or phone calls from unauthorized organizations
+        or individuals on or off its campus. St Joseph’s University, Bengaluru, will not bear any responsibility for applicants being
+        misguided by such promises.
+      </li>
+      <li>
+        St Joseph’s University, Bengaluru, will send emails from
+        <span class="link-blue">sju@linways.in</span> or
+        <span class="link-blue">sju.edu.in</span> domains for the application process.
+        An email will be sent only to the selected candidates for the interview through the SJU sender ID.
+      </li>
+      <li>
+        The application fee for UG Programmes is ₹ 1000, for PG Programmes and PG Diploma Programmes is ₹ 1200,
+        and for Doctoral Programmes (PhD) is ₹ 1000.
+        For programmes with an entrance test, an additional fee of ₹ 200 will be charged (additional bank charges may apply).
+        The application fee is not refundable under any circumstances.
+      </li>
+      <li>Applicants for all bachelor's programmes should update their XII Standard / II PU marks in their application form.</li>
+      <li>
+        The programmes with an entrance test for admission are clearly specified. Requests for changes to date/time/venue/mode
+        of test/interview will not be entertained. Failure to attend the entrance test/interview is considered as “not selected”.
+      </li>
+      <li>
+        For details of the St Joseph's University Entrance Tests (SJUET), please refer to the web page of the respective programme.
+      </li>
+      <li>
+        St Joseph's University Entrance Tests (SJUET) for Cycle-I will be conducted across 5 states in the following cities:
+        Chennai, Kolkata, Ranchi, Cochin/Ernakulam, and Bengaluru.
+      </li>
+    </ol>
+
+    <div class="center-btn">
+      <button class="go-btn" onclick="goToProgrammes()">GO TO PROGRAMMES</button>
+    </div>
+  </div>
+
+  <!-- Programmes Page -->
+  <div class="container programmes-page" id="programmesPage">
+    <div class="breadcrumb">
+      <a onclick="goToAdmissions()">Admissions 2026</a> » <span>Go to Programmes</span>
+    </div>
+
+    <h2 style="font-size:34px;font-weight:900;color:#0b2c4a;margin-bottom:8px;">
+      PROGRAMMES
+    </h2>
+
+    <div class="tabs">
+      <button class="tab active" onclick="showTab('ug')">UNDERGRADUATE</button>
+      <button class="tab" onclick="showTab('pg')">POSTGRADUATE</button>
+      <button class="tab" onclick="showTab('diploma')">PG DIPLOMA</button>
+    </div>
+
+    <div class="note">
+      The dates might be subject to change. Kindly look out for latest updates.<br>
+      The dates, timings and venues will be updated on the applicant portal.
+    </div>
+
+    <div class="table-wrap">
+      <table id="programmeTable"></table>
+    </div>
+  </div>
+
+  <!-- Apply Modal -->
+  <div class="modal" id="applyModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-title" id="modalProgrammeName">Apply</div>
+        <button class="close-btn" onclick="closeModal()">X</button>
+      </div>
+
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" id="fullName" placeholder="Enter your name">
+      </div>
+
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="email" placeholder="Enter your email">
+      </div>
+
+      <div class="form-group">
+        <label>Phone Number</label>
+        <input type="tel" id="phone" placeholder="Enter your phone number">
+      </div>
+
+      <div class="form-group">
+        <label>Selected Programme</label>
+        <input type="text" id="selectedProgramme" readonly>
+      </div>
+
+      <button class="submit-btn" onclick="submitApplication()">SUBMIT APPLICATION</button>
+      <div class="success-msg" id="successMsg">✅ Application submitted successfully!</div>
+    </div>
+  </div>
+
+  <!-- Fee Modal (REPLACED AS YOU GAVE) -->
+  <div class="modal" id="feeModal">
+    <div class="fee-modal-box">
+      <div class="fee-scroll-content">
+        <h3 id="feeTitle" style="color:#0b2c4a; margin-bottom:15px;">Fee Structure</h3>
+        
+        <table class="fee-structure-table">
+          <thead>
+            <tr>
+              <th id="progLabel">Programme</th>
+              <th>Karnataka</th>
+              <th>Non-Karnataka</th>
+              <th>NRI / OCI</th>
+              <th>SAARC</th>
+              <th>Foreign</th>
+            </tr>
+          </thead>
+          <tbody id="feeBody">
+          </tbody>
+        </table>
+
+        <div class="extra-fees-section">
+          <div class="extra-fees-title">The additional fee to be paid is as follows:</div>
+          
+          <div class="fee-row">
+            <span>German / French / Addl. English / Introductory French / Introductory Spanish (2nd Lang)</span>
+            <span class="fee-amount">20,000</span>
+          </div>
+          <div class="fee-row">
+            <span>Introductory Kannada</span>
+            <span class="fee-amount">1,000</span>
+          </div>
+          <div class="fee-row">
+            <span>Sanskrit</span>
+            <span class="fee-amount">5,000</span>
+          </div>
+          <div class="fee-row">
+            <span>Field Visit</span>
+            <span class="fee-amount">3,000</span>
+          </div>
+        </div>
+
+        <div class="fee-footer-note">
+          <p>• Students opting for Kannada / Hindi / Tamil will not be charged any additional fee.</p>
+          <p>• <strong>Note:</strong> If admitted, the fee must be paid in full within the time prescribed.</p>
+          <p style="color:red; font-weight:bold; margin-top:10px;">
+            The Management / University does not collect any type of Capitation fees / Donation other than the fees mentioned above.
+          </p>
+        </div>
+      </div>
+
+      <div class="modal-footer-action">
+        <button class="btn-close-gray" onclick="document.getElementById('feeModal').style.display='none'">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function goToProgrammes(){
+      document.getElementById("admissionsPage").style.display = "none";
+      document.getElementById("programmesPage").style.display = "block";
+      showTab("ug");
+      window.scrollTo(0,0);
+    }
+
+    function goToAdmissions(){
+      document.getElementById("programmesPage").style.display = "none";
+      document.getElementById("admissionsPage").style.display = "block";
+      window.scrollTo(0,0);
+    }
+
+    const data = {
+      ug: [
+        { school:"School of Business", name:"Bachelor of Commerce (B.Com.)", timing:"Batch I: 7:00 AM to 12:00 PM<br>Batch II: 12:00 PM to 04:00 PM<br>Batch III: 4:45 PM to 8:45 PM", sjuet:"No" },
+        { school:"School of Business", name:"Bachelor of Commerce (B.Com.) Industry Integrated", timing:"7:00 AM to 12:00 PM", sjuet:"No" },
+        { school:"School of Business", name:"Bachelor of Business Administration (BBA)", timing:"Batch I: 7:00 AM to 12:00 PM<br>Batch II: 4:45 PM to 8:45 PM", sjuet:"No" },
+        { school:"School of Business", name:"Bachelor of Business Administration (BBA) in Strategic Finance", timing:"Batch I: 7:00 AM to 12:00 PM<br>Batch II: 4:00 PM to 8:45 PM", sjuet:"Yes" }
+      ],
+      pg: [
+        { school:"School of Business", name:"Master of Commerce (M.Com.)", timing:"Batch I: 7:00 AM to 11:00 AM<br>Batch II: 4:45 PM to 8:45 PM", sjuet:"No" },
+        { school:"School of Chemical Sciences", name:"M.Sc. in Analytical Chemistry", timing:"9:00 AM to 4:00 PM", sjuet:"No" },
+        { school:"School of Chemical Sciences", name:"M.Sc. in Organic Chemistry", timing:"7:00 AM to 1:00 PM", sjuet:"No" }
+      ],
+      diploma: [
+        { school:"School of Business", name:"PG Diploma in Financial Management", timing:"Saturday: Offline class 1:00 PM to 5:00 PM<br>Sunday: Online class 8:00 AM to 4:00 PM", sjuet:"No" },
+        { school:"School of Business", name:"PG Diploma in Human Resource Management", timing:"Saturday: Offline class 1:00 PM to 5:00 PM<br>Sunday: Online class 8:00 AM to 4:00 PM", sjuet:"No" },
+        { school:"School of Communication & Media Studies", name:"Executive Diploma Digital Media Communications", timing:"Tuesday & Thursday: 7:30 PM to 8:30 PM (Online)<br>Saturday: 11:30 AM to 1:00 PM (Offline)", sjuet:"No" }
+      ]
+    };
+
+    function showTab(type){
+      document.querySelectorAll(".tab").forEach(btn => btn.classList.remove("active"));
+      if(type === "ug") document.querySelectorAll(".tab")[0].classList.add("active");
+      if(type === "pg") document.querySelectorAll(".tab")[1].classList.add("active");
+      if(type === "diploma") document.querySelectorAll(".tab")[2].classList.add("active");
+
+      let rows = `
+        <tr>
+          <th style="width:80px;">SL. No.</th>
+          <th>Name</th>
+          <th style="width:250px;">Batch Timing</th>
+          <th style="width:160px;">SJU Entrance Test (SJUET)</th>
+          <th style="width:260px;">Fees</th>
+        </tr>
+      `;
+
+      let currentSchool = "";
+      let count = 1;
+
+      data[type].forEach(item => {
+        if(item.school !== currentSchool){
+          currentSchool = item.school;
+          rows += `<tr class="school-row"><td colspan="5">${currentSchool}</td></tr>`;
+        }
+
+        rows += `
+          <tr>
+            <td>${count}</td>
+            <td>${item.name}</td>
+            <td>${item.timing}</td>
+            <td style="font-weight:800;">${item.sjuet}</td>
+            <td>
+              <button class="btn-small" onclick="showFees('${item.name}')">FEES</button>
+              <button class="apply-btn" onclick="openApply('${item.name}')">APPLY</button>
+            </td>
+          </tr>
+        `;
+        count++;
+      });
+
+      document.getElementById("programmeTable").innerHTML = rows;
+    }
+
+    // Function to inject the exact values from Screenshot (85)
+    function showFees(programmeName) {
+      document.getElementById('progLabel').innerText = programmeName;
+      const feeBody = document.getElementById('feeBody');
+      
+      feeBody.innerHTML = `
+        <tr>
+          <td>Admission fee (Non-refundable One-Time Fee)</td>
+          <td>5,000</td>
+          <td>5,000</td>
+          <td>5,000</td>
+          <td>5,000</td>
+          <td>5,000 / US $56</td>
+        </tr>
+        <tr>
+          <td>I Year</td>
+          <td>1,05,000</td>
+          <td>1,20,000</td>
+          <td>1,65,000</td>
+          <td>1,65,000</td>
+          <td>2,05,000 / US $2278</td>
+        </tr>
+        <tr>
+          <td>II year</td>
+          <td>1,10,000</td>
+          <td>1,25,000</td>
+          <td>1,70,000</td>
+          <td>1,70,000</td>
+          <td>2,10,000 / US $2333</td>
+        </tr>
+        <tr>
+          <td>III year</td>
+          <td>1,15,000</td>
+          <td>1,30,000</td>
+          <td>1,75,000</td>
+          <td>1,75,000</td>
+          <td>2,15,000 / US $2388</td>
+        </tr>
+      `;
+      
+      document.getElementById('feeModal').style.display = 'flex';
+    }
+
+    function showDetails(programme){
+      alert("Details for: " + programme + "\n\n(You can add syllabus / eligibility here)");
+    }
+
+    function openApply(programme){
+      document.getElementById("applyModal").style.display = "flex";
+      document.getElementById("modalProgrammeName").innerText = "Apply for " + programme;
+      document.getElementById("selectedProgramme").value = programme;
+      document.getElementById("successMsg").style.display = "none";
+
+      document.getElementById("fullName").value = "";
+      document.getElementById("email").value = "";
+      document.getElementById("phone").value = "";
+    }
+
+    function closeModal(){
+      document.getElementById("applyModal").style.display = "none";
+    }
+
+    function submitApplication(){
+      const name = document.getElementById("fullName").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+
+      if(!name || !email || !phone){
+        alert("⚠ Please fill all fields before submitting.");
+        return;
+      }
+
+      document.getElementById("successMsg").style.display = "block";
+
+      const application = {
+        name, email, phone,
+        programme: document.getElementById("selectedProgramme").value,
+        time: new Date().toLocaleString()
+      };
+
+      let apps = JSON.parse(localStorage.getItem("applications") || "[]");
+      apps.push(application);
+      localStorage.setItem("applications", JSON.stringify(apps));
+    }
+
+    // Close modal when clicking outside box
+    window.addEventListener("click", function(e){
+      const applyModal = document.getElementById("applyModal");
+      const feeModal = document.getElementById("feeModal");
+
+      if(e.target === applyModal){
+        closeModal();
+      }
+
+      if(e.target === feeModal){
+        feeModal.style.display = "none";
+      }
+    });
+  </script>
+
+</body>
+</html>

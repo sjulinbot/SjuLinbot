@@ -1,0 +1,236 @@
+.applicant-dashboard-container {
+    display: flex;
+    height: 100vh;
+    background-color: #f8f9fa;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.applicant-sidebar {
+    width: 250px;
+    background-color: #1e1e2d;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    padding-top: 10px;
+}
+
+.sidebar-header {
+    padding: 20px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sidebar-header .hamburger-icon {
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.search-box {
+    padding: 20px;
+    position: relative;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 10px 40px 10px 15px;
+    background: #2b2b3d;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    outline: none;
+}
+
+.search-box .search-icon {
+    position: absolute;
+    right: 35px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
+}
+
+.sidebar-nav {
+    flex: 1;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 20px;
+    cursor: pointer;
+    transition: background 0.3s;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.nav-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.nav-item.active {
+    background: #6262ff;
+    color: white;
+}
+
+.nav-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.nav-icon-container {
+    width: 32px;
+    height: 32px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+}
+
+.nav-item.active .nav-icon-container {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.dashboard-main {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.dashboard-top-nav {
+    background: white;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+}
+
+.university-breadcrumb {
+    color: #333;
+    font-weight: 500;
+}
+
+.user-profile-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.user-name {
+    font-weight: 600;
+    color: #333;
+}
+
+.user-avatar {
+    width: 35px;
+    height: 35px;
+    background: #eee;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #4cd137;
+    font-size: 1.2rem;
+}
+
+.dashboard-content {
+    padding: 30px;
+}
+
+.active-tab-indicator {
+    padding-bottom: 10px;
+    border-bottom: 2px solid #6262ff;
+    display: inline-block;
+    color: #6262ff;
+    font-weight: 700;
+    font-size: 0.8rem;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+}
+
+.guidelines-card {
+    background: white;
+    border-radius: 12px;
+    padding: 40px;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+    margin-bottom: 30px;
+}
+
+.guidelines-card h2 {
+    text-align: center;
+    font-size: 1rem;
+    color: #333;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+}
+
+.guidelines-card p {
+    text-align: center;
+    font-weight: 600;
+    color: #444;
+    line-height: 1.6;
+    margin-bottom: 30px;
+}
+
+.guidelines-card a {
+    color: #6262ff;
+    text-decoration: none;
+}
+
+.guidelines-list {
+    list-style: none;
+    padding: 0;
+}
+
+.guidelines-list li {
+    margin-bottom: 15px;
+    padding-left: 20px;
+    position: relative;
+    line-height: 1.5;
+    color: #555;
+}
+
+.guidelines-list li::before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    color: #333;
+    font-weight: bold;
+}
+
+.open-forms-section {
+    margin-top: 40px;
+}
+
+.open-forms-section h3 {
+    text-transform: uppercase;
+    font-size: 1.1rem;
+    color: #333;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+}
+
+@media (max-width: 900px) {
+    .applicant-sidebar {
+        width: 80px;
+    }
+
+    .sidebar-header span,
+    .search-box,
+    .nav-item span:not(.nav-icon-container) {
+        display: none;
+    }
+
+    .nav-item {
+        justify-content: center;
+    }
+}

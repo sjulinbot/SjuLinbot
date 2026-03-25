@@ -1,20 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './AttendanceReport.css';
 
-const AttendanceReport = ({ onNavigate, data }) => {
-    const [selectedSemester, setSelectedSemester] = useState('');
+const AttendanceReport = ({ onNavigate, data, initialSemester = '' }) => {
+    const [selectedSemester, setSelectedSemester] = useState(initialSemester);
+
+    useEffect(() => {
+        if (initialSemester) {
+            setSelectedSemester(initialSemester);
+        }
+    }, [initialSemester]);
 
     const currentData = (data && selectedSemester && data[selectedSemester]) ? data[selectedSemester] : { text: "", rows: [] };
-    let totalTH = 0, totalAH = 0;
 
-    const rows = currentData.rows
-    ? currentData.rows.map((row, index) => {
-        const th = row[1];
-        const ah = row[2];
-        const dl = 0;
+    const rows = (currentData.rows || []).map((row, index) => {
+        const th = row[1] || 0;
+        const ah = row[2] || 0;
+        const dl = row.length > 3 ? (row[3] || 0) : 0;
         const total = ah + dl;
         const percentAH = th > 0 ? ((ah / th) * 100).toFixed(2) : "0.00";
-        const percentAHDL = th > 0 ? ((ah / th) * 100).toFixed(2) : "0.00";
+        const percentAHDL = th > 0 ? ((total / th) * 100).toFixed(2) : "0.00";
 
         return {
             index: index + 1,
@@ -26,10 +30,14 @@ const AttendanceReport = ({ onNavigate, data }) => {
             percentAH,
             percentAHDL
         };
-    })
-    : [];
+    });
 
-    const totalPercent = totalTH > 0 ? ((totalAH / totalTH) * 100).toFixed(2) : "0.00";
+    const totalTH = rows.reduce((acc, row) => acc + row.th, 0);
+    const totalAH = rows.reduce((acc, row) => acc + row.ah, 0);
+    const totalDL = rows.reduce((acc, row) => acc + row.dl, 0);
+
+    const totalPercentAH = totalTH > 0 ? ((totalAH / totalTH) * 100).toFixed(2) : "0.00";
+    const totalPercentAHDL = totalTH > 0 ? (((totalAH + totalDL) / totalTH) * 100).toFixed(2) : "0.00";
 
     return (
         <div className="attendance-page-background">
@@ -100,10 +108,10 @@ const AttendanceReport = ({ onNavigate, data }) => {
                                     <td colSpan="2">Total</td>
                                     <td>{totalTH}</td>
                                     <td>{totalAH}</td>
-                                    <td>0</td>
-                                    <td>{totalAH}</td>
-                                    <td>{totalPercent}%</td>
-                                    <td>{totalPercent}%</td>
+                                    <td>{totalDL}</td>
+                                    <td>{totalAH + totalDL}</td>
+                                    <td>{totalPercentAH}%</td>
+                                    <td>{totalPercentAHDL}%</td>
                                 </tr>
                             </tfoot>
                         </table>

@@ -4,10 +4,11 @@ import heroBg from '../assets/new_hero_bg.jpg';
 const Home = ({ onNavigate }) => {
     const [showTopBtn, setShowTopBtn] = React.useState(false);
     const [scrollProgress, setScrollProgress] = React.useState(0);
+    const [heroOpacity, setHeroOpacity] = React.useState(1);
 
     React.useEffect(() => {
         const handleScroll = () => {
-            if (window.scrollY > 400) {
+            if (window.scrollY > 0) {
                 setShowTopBtn(true);
             } else {
                 setShowTopBtn(false);
@@ -17,12 +18,34 @@ const Home = ({ onNavigate }) => {
             const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
             const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
             setScrollProgress(scrolled);
+
+            // Fade out hero section on scroll (fades out completely by 500px)
+            const newOpacity = Math.max(0, 1 - (window.scrollY / 500));
+            setHeroOpacity(newOpacity);
         };
 
         window.addEventListener('scroll', handleScroll);
         // Initial calculation
         handleScroll();
-        return () => window.removeEventListener('scroll', handleScroll);
+
+        // Scroll animations observer
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                } else {
+                    entry.target.classList.remove('is-visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        const fadeElements = document.querySelectorAll('.fade-scroll');
+        fadeElements.forEach(el => observer.observe(el));
+
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+            fadeElements.forEach(el => observer.unobserve(el));
+        };
     }, []);
 
     const scrollToTop = (e) => {
@@ -37,7 +60,11 @@ const Home = ({ onNavigate }) => {
     return (
         <div id="page-home-container">
             {/* Hero Section */}
-            <section className="hero" style={{ backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)), url(${heroBg})` }}>
+            <section className="hero" style={{ 
+                backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)), url(${heroBg})`,
+                opacity: heroOpacity,
+                transition: 'opacity 0.1s ease-out'
+            }}>
                 <div className="hero-badge">St Joseph's University - Bengaluru</div>
                 <h1>Shape Your Future at<br /><span className="accent-text">ST JOSEPH'S UNIVERSITY</span></h1>
                 <p>A premier campus offering undergraduate programmes in Commerce, Business, Computer Applications and Arts —
@@ -62,15 +89,15 @@ const Home = ({ onNavigate }) => {
                 </p>
 
                 <div className="feature-grid">
-                    <div className="feature-card">
+                    <div className="feature-card fade-scroll">
                         <h3>Modern Infrastructure</h3>
                         <p>State-of-the-art classrooms, computer labs, library, and sports facilities on a green campus.</p>
                     </div>
-                    <div className="feature-card">
+                    <div className="feature-card fade-scroll" style={{ transitionDelay: '0.1s' }}>
                         <h3>Experienced Faculty</h3>
                         <p>Dedicated educators with industry and research expertise guiding students toward excellence.</p>
                     </div>
-                    <div className="feature-card">
+                    <div className="feature-card fade-scroll" style={{ transitionDelay: '0.2s' }}>
                         <h3>Holistic Development</h3>
                         <p>Clubs, cultural events, community outreach, and leadership programmes beyond academics.</p>
                     </div>
@@ -83,7 +110,7 @@ const Home = ({ onNavigate }) => {
                 <h2>Contact Us</h2>
 
                 <div className="contact-grid">
-                    <div className="contact-card">
+                    <div className="contact-card fade-scroll">
                         <div className="contact-icon">
                             <i className="fas fa-phone"></i>
                         </div>
@@ -91,7 +118,7 @@ const Home = ({ onNavigate }) => {
                         <p>9480811912</p>
                     </div>
 
-                    <div className="contact-card">
+                    <div className="contact-card fade-scroll" style={{ transitionDelay: '0.1s' }}>
                         <div className="contact-icon">
                             <i className="fas fa-envelope"></i>
                         </div>
@@ -99,7 +126,7 @@ const Home = ({ onNavigate }) => {
                         <p>desk@sju.edu.in</p>
                     </div>
 
-                    <div className="contact-card">
+                    <div className="contact-card fade-scroll" style={{ transitionDelay: '0.2s' }}>
                         <div className="contact-icon">
                             <i className="fas fa-map-marker-alt"></i>
                         </div>

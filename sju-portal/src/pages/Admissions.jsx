@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Admissions.css';
 
-const Admissions = ({ onNavigate, initialView = 'instructions' }) => {
+const Admissions = ({ onNavigate, initialView = 'instructions', applicantName }) => {
     const [view, setView] = useState(initialView);
     const [activeTab, setActiveTab] = useState('ug');
     const [applyModalOpen, setApplyModalOpen] = useState(false);
@@ -33,10 +33,29 @@ const Admissions = ({ onNavigate, initialView = 'instructions' }) => {
     };
 
     const handleApply = (programmeName) => {
+        if (!applicantName) {
+            localStorage.setItem('authRedirect', 'programmes');
+            localStorage.setItem('pendingProgramme', programmeName);
+            onNavigate('applicantAuth');
+            window.scrollTo(0, 0);
+            return;
+        }
+
+        // Check if already applied
+        const apps = JSON.parse(localStorage.getItem("applications") || "[]");
+        const alreadyApplied = apps.some(app => app.programme === programmeName && app.fullName === applicantName);
+        
+        if (alreadyApplied) {
+            alert(`You have already applied for ${programmeName}. Redirecting to your applications.`);
+            localStorage.setItem('applicant_dashboard_active_tab', 'My Applications');
+            onNavigate('applicantDashboard');
+            return;
+        }
+
         setSelectedProgramme(programmeName);
         setApplyModalOpen(true);
         setSubmitted(false);
-        setFormData({ fullName: '', email: '', phone: '' });
+        setFormData({ fullName: applicantName || '', email: '', phone: '' });
     };
 
     const handleSubmit = () => {
@@ -45,7 +64,7 @@ const Admissions = ({ onNavigate, initialView = 'instructions' }) => {
             return;
         }
         setSubmitted(true);
-        // Logic to save to localStorage if needed, similar to original code
+        
         const application = {
             ...formData,
             programme: selectedProgramme,
@@ -54,12 +73,43 @@ const Admissions = ({ onNavigate, initialView = 'instructions' }) => {
         let apps = JSON.parse(localStorage.getItem("applications") || "[]");
         apps.push(application);
         localStorage.setItem("applications", JSON.stringify(apps));
+
+        // Automatically navigate back to dashboard after a delay
+        setTimeout(() => {
+            localStorage.setItem('applicant_dashboard_active_tab', 'My Applications');
+            onNavigate('applicantDashboard');
+            // Reset modal state for next time
+            setApplyModalOpen(false);
+            setSubmitted(false);
+        }, 1500);
     };
 
     const handleShowFees = (programmeName) => {
         setFeeProgramme(programmeName);
         setFeeModalOpen(true);
     };
+
+    useEffect(() => {
+        const pending = localStorage.getItem('pendingProgramme');
+        if (pending && applicantName) {
+            // Check if already applied before auto-opening
+            const apps = JSON.parse(localStorage.getItem("applications") || "[]");
+            const alreadyApplied = apps.some(app => app.programme === pending && app.fullName === applicantName);
+            
+            if (alreadyApplied) {
+                alert(`You have already applied for ${pending}. Redirecting to your applications.`);
+                localStorage.removeItem('pendingProgramme');
+                localStorage.setItem('applicant_dashboard_active_tab', 'My Applications');
+                onNavigate('applicantDashboard');
+            } else {
+                setSelectedProgramme(pending);
+                setApplyModalOpen(true);
+                setSubmitted(false);
+                setFormData(prev => ({ ...prev, fullName: applicantName }));
+                localStorage.removeItem('pendingProgramme');
+            }
+        }
+    }, [applicantName, onNavigate]);
 
     const currentProgrammes = data[activeTab] || [];
 
@@ -69,11 +119,15 @@ const Admissions = ({ onNavigate, initialView = 'instructions' }) => {
         let currentSchool = "";
         let count = 1;
 
+        const apps = JSON.parse(localStorage.getItem("applications") || "[]");
+
         currentProgrammes.forEach((item, index) => {
             if (item.school !== currentSchool) {
                 currentSchool = item.school;
                 rows.push(<tr key={`school-${index}`} className="school-row"><td colSpan="5">{currentSchool}</td></tr>);
             }
+
+            const alreadyApplied = applicantName && apps.some(app => app.programme === item.name && app.fullName === applicantName);
 
             rows.push(
                 <tr key={index}>
@@ -83,7 +137,13 @@ const Admissions = ({ onNavigate, initialView = 'instructions' }) => {
                     <td style={{ fontWeight: 800 }}>{item.sjuet}</td>
                     <td>
                         <button className="btn-small" onClick={() => handleShowFees(item.name)}>FEES</button>
-                        <button className="apply-btn" onClick={() => handleApply(item.name)}>APPLY</button>
+                        <button 
+                            className={`apply-btn ${alreadyApplied ? 'already-applied' : ''}`} 
+                            onClick={() => handleApply(item.name)}
+                            disabled={alreadyApplied}
+                        >
+                            {alreadyApplied ? 'APPLIED' : 'APPLY'}
+                        </button>
                     </td>
                 </tr>
             );

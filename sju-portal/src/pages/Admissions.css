@@ -210,6 +210,16 @@
     transform: scale(1.03);
 }
 
+.apply-btn.already-applied {
+    background: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.8;
+}
+
+.apply-btn.already-applied:hover {
+    transform: none;
+}
+
 /* Modal */
 .admissions-wrapper .modal {
     position: fixed;

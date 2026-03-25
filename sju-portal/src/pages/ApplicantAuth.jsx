@@ -33,8 +33,7 @@ const ApplicantAuth = ({ onNavigate, onLoginSuccess }) => {
             const data = await response.json();
             if (data.success) {
                 // Pass full user data to App
-                onLoginSuccess(data.name, 'applicant', true);
-                onNavigate('applicantDashboard');
+                onLoginSuccess(data.name || loginData.username, 'applicant', true);
             } else {
                 setError(data.message || 'Login failed');
             }

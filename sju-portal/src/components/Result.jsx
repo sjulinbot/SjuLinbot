@@ -40,7 +40,7 @@ const Result = ({ data, studentName = "PRINCETINE XAVIER B", studentRegNo = "233
         if (!selectedSems.includes(sem)) {
             setSelectedSems([...selectedSems, sem]);
         }
-        setOpenDropdown(''); // Optional: keep open if multi-select feeling is desired
+        setOpenDropdown('');
     };
 
     const removeSemChip = (sem, e) => {
@@ -102,7 +102,7 @@ const Result = ({ data, studentName = "PRINCETINE XAVIER B", studentRegNo = "233
                                     }
                                 }}
                             >
-                                🔄 Refresh
+                                Refresh
                             </button>
                         </div>
                     </div>
@@ -120,7 +120,6 @@ const Result = ({ data, studentName = "PRINCETINE XAVIER B", studentRegNo = "233
                         </thead>
                         <tbody>
                             {subjects.map((sub, idx) => {
-                                // Try to find marks by exact key or partial match
                                 const savedMark = internalMarks[sub.key] ||
                                     Object.entries(internalMarks).find(([k]) => k.toLowerCase().includes(sub.name.toLowerCase()))?.[1];
 
@@ -212,22 +211,30 @@ const Result = ({ data, studentName = "PRINCETINE XAVIER B", studentRegNo = "233
                             }
                             if (currentExamType === 'Supplementary / Improvement Exam') {
                                 return (
-                                    <div key={sem} className="exam-status no-supply">
-                                        <strong>Semester {sem}:</strong> No Supplementary.
+                                    <div key={sem} className="exam-status">
+                                        <strong>Semester {sem}:</strong> No Supplementary record found for this semester.
                                     </div>
                                 );
                             }
 
-                            const semesterData = data ? data[sem] : null; // Rename to avoid conflict with prop
+                            const semesterData = data ? data[sem] : null;
                             if (!semesterData) return null;
 
+                            const courses = semesterData.courses || [];
+                            const summary = semesterData.summary || {};
+                            
+                            const totalMax = courses.reduce((acc, c) => acc + (parseInt(c[3]) || 0), 0);
+                            const totalObtained = courses.reduce((acc, c) => acc + (parseInt(c[4]) || 0), 0);
+                            const totalCredits = courses.reduce((acc, c) => acc + (parseInt(c[2]) || 0), 0);
+
                             return (
-                                <div key={sem} className="card-container">
-                                    <div className="header">
+                                <div key={sem} className="semester-result">
+                                    <div className="result-header">
                                         <h2>ST JOSEPH'S UNIVERSITY</h2>
                                         <p>BENGALURU – 560 027</p>
                                         <h4>STATEMENT OF MARKS - {semesterData.name} SEMESTER</h4>
                                     </div>
+
                                     <table className="result-table">
                                         <tbody>
                                             <tr style={{ background: 'transparent', border: 'none' }}>
@@ -236,24 +243,24 @@ const Result = ({ data, studentName = "PRINCETINE XAVIER B", studentRegNo = "233
                                                 <th style={{ border: 'none', textAlign: 'left' }}>REGISTER NO</th>
                                                 <td style={{ border: 'none', textAlign: 'left' }}>{studentRegNo}</td>
                                             </tr>
-                                            <tr style={{ background: 'transparent', border: 'none' }}>
-                                                <th style={{ border: 'none', textAlign: 'left' }}>EXAM TYPE</th>
-                                                <td style={{ border: 'none', textAlign: 'left' }}>{currentExamType}</td>
-                                                <th style={{ border: 'none', textAlign: 'left' }}>MONTH/YEAR</th>
-                                                <td style={{ border: 'none', textAlign: 'left' }}>{semesterData.date}</td>
-                                            </tr>
                                         </tbody>
                                     </table>
 
-                                    {/* Using a separate table for marks to match styles or keep custom borders */}
                                     <table className="result-table">
                                         <thead>
-                                            <tr style={{ background: '#f8f9fa' }}>
-                                                <th>Code</th><th>Course Name</th><th>Cr</th><th>Max</th><th>Obt</th><th>Grade</th><th>GP</th><th>Result</th>
+                                            <tr>
+                                                <th>Course Code</th>
+                                                <th>Course Title</th>
+                                                <th>Credits</th>
+                                                <th>Marks Max</th>
+                                                <th>Marks Obtained</th>
+                                                <th>Grade Obtained</th>
+                                                <th>Grade Point</th>
+                                                <th>Result</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {semesterData.courses.map((c, idx) => (
+                                            {courses.map((c, idx) => (
                                                 <tr key={idx}>
                                                     <td>{c[0]}</td>
                                                     <td className="text-left">{c[1]}</td>
@@ -262,16 +269,40 @@ const Result = ({ data, studentName = "PRINCETINE XAVIER B", studentRegNo = "233
                                                     <td>{c[4]}</td>
                                                     <td>{c[5]}</td>
                                                     <td>{c[6]}</td>
-                                                    <td>PASS</td>
+                                                    <td style={{ color: c[5] === 'F' ? '#ef4444' : 'inherit', fontWeight: c[5] === 'F' ? 'bold' : 'normal' }}>
+                                                        {c[5] === 'F' ? 'FAIL' : 'PASS'}
+                                                    </td>
                                                 </tr>
                                             ))}
                                         </tbody>
+                                        <tfoot className="result-summary">
+                                            <tr>
+                                                <td colSpan="4">Total Mark Obtain</td>
+                                                <td>{totalObtained || '-'}</td>
+                                                <td colSpan="2">Max Marks</td>
+                                                <td>{totalMax || '-'}</td>
+                                            </tr>
+                                            <tr>
+                                                <td colSpan="4">Total Credits</td>
+                                                <td>{totalCredits || '-'}</td>
+                                                <td colSpan="2">Grade</td>
+                                                <td>{summary.grade || '-'}</td>
+                                            </tr>
+                                            <tr>
+                                                <td colSpan="4">Percentage</td>
+                                                <td>{summary.perc || '-'} %</td>
+                                                <td colSpan="2">Result</td>
+                                                <td>{summary.result || '-'}</td>
+                                            </tr>
+                                            <tr>
+                                                <td colSpan="4">Semester GPA</td>
+                                                <td colSpan="4">{summary.sgpa || '-'}</td>
+                                            </tr>
+                                        </tfoot>
                                     </table>
-                                    <div className="footer-stats">
-                                        <span>RESULT: {semesterData.summary.result}</span>
-                                        <span>PERCENTAGE: {semesterData.summary.perc}%</span>
-                                        <span>OVERALL GRADE: {semesterData.summary.grade}</span>
-                                        <span>SGPA: {semesterData.summary.sgpa}</span>
+
+                                    <div className="result-date">
+                                        Result Date: {semesterData.date}
                                     </div>
                                 </div>
                             );

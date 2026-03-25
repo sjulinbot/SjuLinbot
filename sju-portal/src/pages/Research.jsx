@@ -1,10 +1,41 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './Research.css';
 import frVictorImg from '../assets/fr_victor.jpg';
 import frDionysiusImg from '../assets/fr_dionysius_new.jpg';
 import frRoshanImg from '../assets/fr_roshan.jpg';
 
 const Research = ({ onNavigate }) => {
+    const [showTopBtn, setShowTopBtn] = useState(false);
+    const [scrollProgress, setScrollProgress] = useState(0);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            if (window.scrollY > 0) {
+                setShowTopBtn(true);
+            } else {
+                setShowTopBtn(false);
+            }
+
+            const winScroll = document.documentElement.scrollTop || document.body.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+            setScrollProgress(scrolled);
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        handleScroll();
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    const scrollToTop = (e) => {
+        if (e && e.preventDefault) e.preventDefault();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const circleRadius = 24;
+    const circleCircumference = 2 * Math.PI * circleRadius;
+    const strokeDashoffset = circleCircumference - (scrollProgress / 100) * circleCircumference;
+
     return (
         <div className="research-container">
             {/* BANNER */}
@@ -114,9 +145,30 @@ const Research = ({ onNavigate }) => {
                 </div>
             </section>
 
-            <footer className="research-footer">
-                <p>&copy; 2026 St Joseph's University. All Rights Reserved.</p>
-            </footer>
+            {/* Back to top button */}
+            <a
+                href="#"
+                className={`floating-top-btn btn-right-side ${showTopBtn ? 'visible' : ''}`}
+                onClick={scrollToTop}
+                style={{ color: '#d9a34a' }}
+            >
+                <svg className="progress-ring" width="55" height="55">
+                    <circle
+                        className="progress-ring__circle"
+                        stroke="#d9a34a"
+                        strokeWidth="3"
+                        fill="transparent"
+                        r={circleRadius}
+                        cx="27.5"
+                        cy="27.5"
+                        style={{
+                            strokeDasharray: `${circleCircumference} ${circleCircumference}`,
+                            strokeDashoffset: strokeDashoffset
+                        }}
+                    />
+                </svg>
+                <i className="fas fa-chevron-up top-btn-icon"></i>
+            </a>
         </div>
     );
 };

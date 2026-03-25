@@ -474,6 +474,10 @@
     color: #4b5563;
 }
 
+.dropdown-item-link.logout:active {
+    transform: scale(0.95);
+}
+
 
 .staff-header {
     padding: 15px 30px;
@@ -823,7 +827,7 @@
 
 .filter-grid-row {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-columns: 2fr 1fr;
     gap: 20px;
 }
 
@@ -1078,6 +1082,17 @@
 .stu-att-card.unmarked .st-status-circle {
     display: none;
 }
+
+.stu-att-card.marked {
+    background: #71717a !important;
+    cursor: not-allowed;
+}
+
+.stu-att-card.marked .st-status-circle {
+    display: flex;
+    color: #71717a;
+}
+
 
 /* Student Leave Management View */
 .student-leave-management-view {
@@ -1497,3 +1512,69 @@
     color: #9ca3af;
     cursor: not-allowed;
 }
+
+/* Tooltip for Leave Reason Description */
+.reason-cell {
+    position: relative;
+    cursor: help;
+    color: #4b5563;
+    text-decoration: underline dotted #cbd5e1;
+    text-underline-offset: 4px;
+}
+
+.reason-cell:hover {
+    color: #6b40bd;
+    text-decoration-color: #6b40bd;
+}
+
+.description-tooltip {
+    visibility: hidden;
+    position: absolute;
+    z-index: 1000;
+    top: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 240px;
+    background-color: #ffffff;
+    color: #374151;
+    text-align: left;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    font-size: 13px;
+    line-height: 1.5;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    transition: opacity 0.3s, transform 0.3s;
+    pointer-events: none;
+    font-weight: 500;
+    font-style: normal;
+}
+
+.description-tooltip::after {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -6px;
+    border-width: 6px;
+    border-style: solid;
+    border-color: transparent transparent #ffffff transparent;
+}
+
+.reason-cell:hover .description-tooltip {
+    visibility: visible;
+    opacity: 1;
+    transform: translateX(-50%) translateY(5px); /* Changed from translateY(-5px) */
+}
+
+.tooltip-header {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #9ca3af;
+    margin-bottom: 6px;
+    border-bottom: 1px solid #374151;
+    padding-bottom: 4px;
+}

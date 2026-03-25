@@ -59,8 +59,10 @@ const Chatbot = ({ onNavigate, onLoginSuccess, pageContext, isLoggedIn, userRole
 
             if (data.success) {
                 const role = view === 'login_student' ? 'student' : 'staff';
-                onLoginSuccess(view === 'login_student' ? data.studentId : data.id, role, true, true);
-                setIsOpen(false);
+                onLoginSuccess(view === 'login_student' ? data.studentId : data.id, role, role !== 'student', true);
+                if (role !== 'student') {
+                    setIsOpen(false);
+                }
                 setView(role === 'student' ? 'student_options' : 'staff_options');
             } else {
                 setError(data.message || 'Invalid credentials');
@@ -105,6 +107,8 @@ const Chatbot = ({ onNavigate, onLoginSuccess, pageContext, isLoggedIn, userRole
                     setIsOpen(true);
                 } else if (isLoggedIn && userRole === 'staff' && pageContext === 'MAIN_PAGE' && !isOpen) {
                     onNavigate('staffDashboard');
+                } else if (isLoggedIn && userRole === 'applicant' && pageContext === 'MAIN_PAGE' && !isOpen) {
+                    onNavigate('applicantDashboard');
                 } else {
                     toggleChat();
                 }
@@ -116,26 +120,15 @@ const Chatbot = ({ onNavigate, onLoginSuccess, pageContext, isLoggedIn, userRole
                 <div className="chat-header" style={{ padding: '20px', background: '#001a33' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '15px', flex: 1 }}>
                         {view !== 'menu' && !isLoggedIn && (
-                            <button className="back-btn" onClick={() => setView('menu')} style={{
-                                background: 'rgba(255,255,255,0.1)',
-                                width: '35px',
-                                height: '35px',
-                                borderRadius: '50%',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                border: 'none',
-                                color: 'white',
-                                cursor: 'pointer'
-                            }}>
-                                <i className="fas fa-arrow-left" style={{ fontSize: '14px' }}></i>
+                            <button className="back-btn" onClick={() => setView('menu')}>
+                                <i className="fas fa-arrow-left"></i>
                             </button>
                         )}
                         <span style={{ fontSize: '18px', fontWeight: '700', whiteSpace: 'nowrap' }}>
-                            SJU Digital Assistant {isLoggedIn ? (userRole === 'student' ? '(student)' : '(staff)') : ''}
+                            SJU Digital Assistant {isLoggedIn ? (userRole === 'student' ? '(student)' : (userRole === 'staff' ? '(staff)' : '(applicant)')) : ''}
                         </span>
                         {isLoggedIn && (
-                            <button onClick={() => { onLogout(); setView('menu'); }} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', fontSize: '18px', marginLeft: '5px' }}>
+                            <button className="chatbot-logout-btn" onClick={() => { onLogout(); setView('menu'); }}>
                                 <i className="fas fa-sign-out-alt"></i>
                             </button>
                         )}
@@ -147,7 +140,6 @@ const Chatbot = ({ onNavigate, onLoginSuccess, pageContext, isLoggedIn, userRole
                         alignItems: 'center',
                         justifyContent: 'center',
                         border: 'none',
-                        color: 'white',
                         cursor: 'pointer',
                         fontSize: '24px',
                         marginLeft: '10px'

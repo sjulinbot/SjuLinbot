@@ -36,7 +36,18 @@ function App() {
     }
     setUserRole(role);
     if (redirect) {
-      setCurrentPage(role === 'staff' ? 'staffDashboard' : (role === 'applicant' ? 'applicantDashboard' : 'dashboard')); // Redirect after login
+      // Dynamic redirect for applicants if they were in the middle of a flow
+      let redirectPage = role === 'staff' ? 'staffDashboard' : (role === 'applicant' ? 'applicantDashboard' : 'dashboard');
+      
+      if (role === 'applicant') {
+        const storedRedirect = localStorage.getItem('authRedirect');
+        if (storedRedirect) {
+          redirectPage = storedRedirect;
+          localStorage.removeItem('authRedirect');
+        }
+      }
+      
+      setCurrentPage(redirectPage);
       setIsChatbotNav(role === 'student' ? viaChatbot : false);
     }
   };
@@ -68,9 +79,9 @@ function App() {
         }
         return <Dashboard type={currentPage} studentId={studentId} onNavigate={handleNavigate} onLogout={handleLogout} shouldCollapse={isChatbotNav} />;
       case 'admissions':
-        return <Admissions onNavigate={handleNavigate} initialView="instructions" />;
+        return <Admissions onNavigate={handleNavigate} initialView="instructions" applicantName={userName} />;
       case 'programmes':
-        return <Admissions onNavigate={handleNavigate} initialView="programmes" />;
+        return <Admissions onNavigate={handleNavigate} initialView="programmes" applicantName={userName} />;
       case 'research':
         return <Research onNavigate={handleNavigate} />;
       case 'library':
@@ -80,15 +91,15 @@ function App() {
       case 'applicantAuth':
         return <ApplicantAuth onNavigate={handleNavigate} onLoginSuccess={handleLoginSuccess} />;
       case 'applicantDashboard':
-        return <ApplicantDashboard onLogout={handleLogout} userName={userName} />;
+        return <ApplicantDashboard onLogout={handleLogout} userName={userName} onNavigate={handleNavigate} />;
       default:
         return <Home />;
     }
   };
 
-  const isDashboard = ['dashboard', 'attendance', 'fees', 'result', 'staffDashboard'].includes(currentPage);
-  const chatPageContext = isDashboard ? "STUDENT_DASHBOARD" : "MAIN_PAGE";
-  const isLoggedIn = !!studentId;
+  const isDashboard = ['dashboard', 'attendance', 'fees', 'result', 'staffDashboard', 'applicantDashboard'].includes(currentPage);
+  const chatPageContext = isDashboard ? (currentPage === 'staffDashboard' ? "STAFF_DASHBOARD" : (currentPage === 'applicantDashboard' ? "APPLICANT_DASHBOARD" : "STUDENT_DASHBOARD")) : "MAIN_PAGE";
+  const isLoggedIn = !!studentId || !!userName;
 
   if (currentPage === 'staffDashboard') {
     return <StaffDashboard onLogout={handleLogout} onNavigate={handleNavigate} />;

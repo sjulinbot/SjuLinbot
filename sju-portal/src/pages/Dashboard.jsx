@@ -6,29 +6,47 @@ import Result from '../components/Result';
 import Fees from '../components/Fees';
 import studentPhotoDefault from '../assets/student_profile.jpg';
 import jonnyPhoto from '../assets/jonny_profile.jpg';
+import sreelayaPhoto from '../assets/sreelaya.jpg';
 
 const Dashboard = ({ type, studentId, onNavigate, onLogout, shouldCollapse }) => { // onNavigate to go back home
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
-    const displayPhoto = studentId === '233bcac26' ? jonnyPhoto : studentPhotoDefault;
-    const displayEmail = studentId === '233bcac26' ? 'jonny123@gmail.com' : 'princetinexavier@gmail.com';
+    const displayPhoto = studentId === '233bcac26' ? jonnyPhoto : (studentId === '233bcac30' ? sreelayaPhoto : studentPhotoDefault);
+    const displayEmail = studentId === '233bcac26' ? 'jonny123@gmail.com' : (studentId === '233bcac30' ? 'sreelayatr@gmail.com' : 'princetinexavier@gmail.com');
     const normalizeType = (t) => (t === 'dashboard' || !t) ? 'home' : t;
     const [activePage, setActivePage] = useState(normalizeType(type)); // 'home', 'timetable', etc.
     const [activeTab, setActiveTab] = useState('courses'); // 'courses', 'dashboard'
     const [showDropdown, setShowDropdown] = useState(false);
     const [showNotificationDropdown, setShowNotificationDropdown] = useState(false);
+    const [readNotificationCount, setReadNotificationCount] = useState(() => {
+        const saved = localStorage.getItem(`readNotifications_${studentId}`);
+        return saved ? parseInt(saved, 10) : 0;
+    });
     const [expandedItems, setExpandedItems] = useState({ navResult: false });
+    const [lastResultTab, setLastResultTab] = useState('exam');
+    const [prefillLeaveData, setPrefillLeaveData] = useState(null);
+    const [attendanceInitialSemester, setAttendanceInitialSemester] = useState('');
+    const [currentAbsentNotifId, setCurrentAbsentNotifId] = useState(null);
+    const [leaveDescription, setLeaveDescription] = useState('');
+    const [appliedAbsentNotifs, setAppliedAbsentNotifs] = useState(() => {
+        const saved = localStorage.getItem(`appliedAbsentNotifs_${studentId}`);
+        return saved ? JSON.parse(saved) : [];
+    });
     const notificationRef = useRef(null);
+    const profileRef = useRef(null);
 
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (notificationRef.current && !notificationRef.current.contains(event.target)) {
                 setShowNotificationDropdown(false);
             }
+            if (profileRef.current && !profileRef.current.contains(event.target)) {
+                setShowDropdown(false);
+            }
         };
 
-        if (showNotificationDropdown) {
+        if (showNotificationDropdown || showDropdown) {
             document.addEventListener('mousedown', handleClickOutside);
         } else {
             document.removeEventListener('mousedown', handleClickOutside);
@@ -37,7 +55,7 @@ const Dashboard = ({ type, studentId, onNavigate, onLogout, shouldCollapse }) =>
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, [showNotificationDropdown]);
+    }, [showNotificationDropdown, showDropdown]);
 
     useEffect(() => {
         setActivePage(normalizeType(type));
@@ -112,7 +130,7 @@ const Dashboard = ({ type, studentId, onNavigate, onLogout, shouldCollapse }) =>
     const attTotals = getAttendanceTotals();
 
     const navItems = [
-        { id: 'navHome', icon: '🏠', label: 'Home', page: 'home' },
+        { id: 'navHome', icon: '🏠', label: 'Home', page: 'home', tab: 'courses' },
         { id: 'navProfile', icon: '👤', label: 'Profile', page: 'profile' },
         { id: 'navTimetable', icon: '📅', label: 'Timetables', page: 'timetable' },
         { id: 'navCalendar', icon: '🗓️', label: 'Academic Calendar', page: 'calendar' },
@@ -137,6 +155,12 @@ const Dashboard = ({ type, studentId, onNavigate, onLogout, shouldCollapse }) =>
                 ...prev,
                 [item.id]: !prev[item.id]
             }));
+            if (item.page) {
+                setActivePage(item.page);
+                if (item.id === 'navResult') {
+                    setActiveTab(lastResultTab);
+                }
+            }
             return;
         }
 
@@ -144,6 +168,12 @@ const Dashboard = ({ type, studentId, onNavigate, onLogout, shouldCollapse }) =>
             setActivePage(item.page);
             if (item.tab) {
                 setActiveTab(item.tab);
+                if (item.page === 'result') {
+                    setLastResultTab(item.tab);
+                }
+            }
+            if (item.page !== 'result') {
+                setExpandedItems(prev => ({ ...prev, navResult: false }));
             }
         }
     };
@@ -162,7 +192,7 @@ const Dashboard = ({ type, studentId, onNavigate, onLogout, shouldCollapse }) =>
             >
                 <div className="sidebar-top">
                     <div className="back-btn" onClick={() => onNavigate && onNavigate('home')}>←</div>
-                    <div className="hamburger" onClick={() => setSidebarCollapsed(!sidebarCollapsed)}>≡</div>
+                    <div className="hamburger" style={{ color: sidebarCollapsed ? '#fff' : '#fbbf24' }} onClick={() => setSidebarCollapsed(!sidebarCollapsed)}>≡</div>
                 </div>
 
                 {/* SEARCH */}
@@ -185,12 +215,12 @@ const Dashboard = ({ type, studentId, onNavigate, onLogout, shouldCollapse }) =>
                                     <div className="icon-box">{item.icon}</div>
                                     <span className="label">{item.label}</span>
                                 </div>
-                                {item.subItems && !sidebarCollapsed && (
+                                {item.subItems && (!sidebarCollapsed || isHovered) && (
                                     <div className="dropdown-arrow">{expandedItems[item.id] ? '▼' : '▶'}</div>
                                 )}
                             </div>
 
-                            {item.subItems && expandedItems[item.id] && !sidebarCollapsed && (
+                            {item.subItems && expandedItems[item.id] && (!sidebarCollapsed || isHovered) && (
                                 <div className="sub-nav">
                                     {item.subItems.map((sub) => (
                                         <div
@@ -218,13 +248,28 @@ const Dashboard = ({ type, studentId, onNavigate, onLogout, shouldCollapse }) =>
                     <div className="header-right">
                         <div className="pill">STUDENT</div>
 
-                        <div className="icon-circle" ref={notificationRef} onClick={() => setShowNotificationDropdown(!showNotificationDropdown)}>
+                        <div className="icon-circle" ref={notificationRef} onClick={() => {
+                            setShowNotificationDropdown(!showNotificationDropdown);
+                            if (!showNotificationDropdown) {
+                                const newCount = (studentData.notifications || []).length;
+                                setReadNotificationCount(newCount);
+                                localStorage.setItem(`readNotifications_${studentId}`, newCount.toString());
+                            }
+                        }}>
                             <span className="bell-icon-custom">🔔</span>
-                            {(studentData.notifications || []).length > 0 && (
-                                <span className="notification-badge-custom">
-                                    {(studentData.notifications || []).length}
-                                </span>
-                            )}
+                            {(() => {
+                                const notifs = studentData.notifications || [];
+                                const newCount = Math.max(0, notifs.length - readNotificationCount);
+                                const blueDotCount = notifs.filter(n => n.type === 'attendance' && !appliedAbsentNotifs.includes(n.id)).length;
+                                if (newCount > 0 || blueDotCount > 0) {
+                                    return (
+                                        <span className="notification-badge-custom">
+                                            {newCount > 0 ? newCount : blueDotCount}
+                                        </span>
+                                    );
+                                }
+                                return null;
+                            })()}
                             {showNotificationDropdown && (
                                 <div className="notification-dropdown" onClick={(e) => e.stopPropagation()}>
                                     <div className="notification-header">Notifications</div>
@@ -234,17 +279,136 @@ const Dashboard = ({ type, studentId, onNavigate, onLogout, shouldCollapse }) =>
                                             if (notifs.length > 0) {
                                                 return notifs.map((notif, idx) => (
                                                     <div key={idx} className="notification-item" onClick={() => {
-                                                        if (notif.type === 'leave') setActivePage('leave');
-                                                        else if (notif.type === 'attendance') setActivePage('attendance');
+                                                        if (notif.type === 'leave') {
+                                                            if (notif.message.toLowerCase().includes('attendance')) {
+                                                                setAttendanceInitialSemester('sem6');
+                                                                setActivePage('attendance');
+                                                            } else {
+                                                                setActivePage('leave');
+                                                            }
+                                                        } else if (notif.type === 'attendance') {
+                                                            if (appliedAbsentNotifs.includes(notif.id)) {
+                                                                // Already applied, do not navigate to leave application
+                                                                return;
+                                                            }
+                                                            setCurrentAbsentNotifId(notif.id);
+                                                            // Calculate pre-fill data based on notification message and timestamp
+                                                            const subjectsList = [
+                                                                "CA 6P2 - MAJOR PROJECT LAB",
+                                                                "CA 6P1 - MOBILE APPLICATION DEVELOPMENT LAB",
+                                                                "DAV 02 - POWER BI",
+                                                                "CADE 6423 - MOBILE APPLICATION DEVELOPMENT",
+                                                                "CA 6323 - INTERNET OF THINGS",
+                                                                "CA 6223 - ARTIFICIAL INTELLIGENCE AND APPLICATIONS",
+                                                                "CA 6123 - SOFTWARE ENGINEERING"
+                                                            ];
+                                                            
+                                                            let matchedSubject = '';
+                                                            const messageLower = notif.message.toLowerCase().replace(/\s+/g, '');
+                                                            
+                                                            subjectsList.forEach(s => {
+                                                                const code = s.split(' - ')[0].replace(/\s+/g, '').toLowerCase();
+                                                                if (messageLower.includes(code)) {
+                                                                    matchedSubject = s;
+                                                                }
+                                                            });
+
+                                                            let rawDate = notif.absenceDate || '';
+                                                            let finalDate = '';
+
+                                                            // 1. Try metadata first
+                                                            if (rawDate) {
+                                                                const parts = rawDate.includes('-') ? rawDate.split('-') : rawDate.split('/');
+                                                                if (parts.length === 3) {
+                                                                    // If YYYY is at start
+                                                                    if (parts[0].length === 4) {
+                                                                        finalDate = `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
+                                                                    } else {
+                                                                        // If DD/MM/YYYY
+                                                                        finalDate = `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+                                                                    }
+                                                                }
+                                                            }
+
+                                                            // 2. Fallback to message text parsing (e.g., "on 12/03/2026")
+                                                            if (!finalDate && notif.message) {
+                                                                const dateMatch = notif.message.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
+                                                                if (dateMatch) {
+                                                                    finalDate = `${dateMatch[3]}-${dateMatch[2].padStart(2, '0')}-${dateMatch[1].padStart(2, '0')}`;
+                                                                }
+                                                            }
+                                                            
+                                                            setPrefillLeaveData({
+                                                                subject: matchedSubject,
+                                                                date: finalDate // This ensures the precise marked absent date is used
+                                                            });
+                                                            setLeaveDescription('');
+                                                            setActivePage('apply-leave');
+                                                        }
                                                         setShowNotificationDropdown(false);
                                                     }}>
-                                                        <span className="notif-icon">{notif.type === 'attendance' ? '🚫' : '📝'}</span>
+                                                        <span className="notif-icon" style={{ position: 'relative' }}>
+                                                            {notif.type === 'attendance' ? '🚫' : '📝'}
+                                                            {notif.type === 'attendance' && !appliedAbsentNotifs.includes(notif.id) && (
+                                                                <span style={{
+                                                                    position: 'absolute',
+                                                                    bottom: '-2px',
+                                                                    right: '-2px',
+                                                                    width: '8px',
+                                                                    height: '8px',
+                                                                    background: '#3b82f6',
+                                                                    borderRadius: '50%',
+                                                                    border: '1px solid white'
+                                                                }}></span>
+                                                            )}
+                                                        </span>
                                                         <div className="notif-content">
                                                             <div className="notif-title">
                                                                 {notif.type === 'attendance' ? (
                                                                     <strong>{notif.message}</strong>
                                                                 ) : (
-                                                                    <span>Your <strong>leave</strong> application was <strong>{notif.status}</strong>.</span>
+                                                                    <span>
+                                                                        {(() => {
+                                                                            if (notif.message.includes('attendance not marked -')) {
+                                                                                const parts = notif.message.split('attendance not marked -');
+                                                                                return (
+                                                                                    <>
+                                                                                        {parts[0]}
+                                                                                        <span style={{ color: '#ef4444', fontWeight: 'bold' }}>
+                                                                                            attendance not marked -
+                                                                                            <br />
+                                                                                            {parts[1]}
+                                                                                        </span>
+                                                                                    </>
+                                                                                );
+                                                                            } else if (notif.message.includes('attendance marked absent -')) {
+                                                                                const parts = notif.message.split('attendance marked absent -');
+                                                                                return (
+                                                                                    <>
+                                                                                        {parts[0]}
+                                                                                        <span style={{ color: '#ef4444', fontWeight: 'bold' }}>
+                                                                                            attendance marked absent -
+                                                                                            <br />
+                                                                                            {parts[1]}
+                                                                                        </span>
+                                                                                    </>
+                                                                                );
+                                                                            } else if (notif.message.includes('attendance marked -')) {
+                                                                                const parts = notif.message.split('attendance marked -');
+                                                                                return (
+                                                                                    <>
+                                                                                        {parts[0]}
+                                                                                        <span style={{ color: '#16a34a', fontWeight: 'bold' }}>
+                                                                                            attendance marked -
+                                                                                            <br />
+                                                                                            {parts[1]}
+                                                                                        </span>
+                                                                                    </>
+                                                                                );
+                                                                            }
+                                                                            return notif.message;
+                                                                        })()}
+                                                                    </span>
                                                                 )}
                                                             </div>
                                                             <div className="notif-time">
@@ -262,7 +426,7 @@ const Dashboard = ({ type, studentId, onNavigate, onLogout, shouldCollapse }) =>
                             )}
                         </div>
 
-                        <div className="profile-container" style={{ position: 'relative', cursor: 'pointer' }} onClick={() => setShowDropdown(!showDropdown)}>
+                        <div className="profile-container" ref={profileRef} style={{ position: 'relative', cursor: 'pointer' }} onClick={() => setShowDropdown(!showDropdown)}>
                             <div className="profile">
                                 <img src={displayPhoto} alt="profile" />
                                 <div>
@@ -272,7 +436,7 @@ const Dashboard = ({ type, studentId, onNavigate, onLogout, shouldCollapse }) =>
                             </div>
 
                             {showDropdown && (
-                                <div className="profile-dropdown">
+                                <div className="profile-dropdown" onClick={(e) => e.stopPropagation()}>
                                     <div className="dropdown-header">
                                         Signed in as<br />
                                         <strong>{studentData.name}</strong><br />
@@ -311,191 +475,79 @@ const Dashboard = ({ type, studentId, onNavigate, onLogout, shouldCollapse }) =>
                     {/* HOME PAGE */}
                     {activePage === 'home' && (
                         <div id="homePage">
-                            {/* Tabs */}
+                            {/* Tabs - Removed Dashboard/Overview tab as requested */}
                             <div className="tabs">
-                                <div className={`tab ${activeTab === 'courses' ? 'active' : ''}`} onClick={() => setActiveTab('courses')}>My Courses</div>
-                                <div className={`tab ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => setActiveTab('dashboard')}>Dashboard / Overview</div>
+                                <div className="tab active">My Courses</div>
                             </div>
 
                             {/* COURSES */}
-                            {activeTab === 'courses' && (
-                                <div id="coursesSection">
-                                    <div className="program-line">
-                                        Program: <b>BACHELOR OF COMPUTER APPLICATIONS</b>,
-                                        Batch: <b>{studentData.batch}</b>, Current Semester: <b>{studentData.semester}</b>
+                            <div id="coursesSection">
+                                <div className="program-line">
+                                    Program: <b>BACHELOR OF COMPUTER APPLICATIONS</b>,
+                                    Batch: <b>{studentData.batch}</b>, Current Semester: <b>{studentData.semester}</b>
+                                </div>
+
+
+                                <div className="grid">
+                                    <div className="card">
+                                        <div className="course-title">CA 6P2 - MAJOR PROJECT LAB BCA-202...</div>
+                                        <div className="course-sub">CA 6P2 - MAJOR PROJECT LAB</div>
+                                        <div className="teachers">
+                                            <span className="tag">Melwyn Amrithraj</span>
+                                            <span className="tag">Shalini S</span>
+                                        </div>
                                     </div>
 
-                                    <div className="filter-box">
-                                        <button className="filter-btn">⚙ Show Filters</button>
+                                    <div className="card">
+                                        <div className="course-title">CA 6P1 - MOBILE APPLICATION DEVEL...</div>
+                                        <div className="course-sub">CA 6P1 - Mobile Application Development Lab</div>
+                                        <div className="teachers">
+                                            <span className="tag">SRUTHI SURENDRAN P</span>
+                                            <span className="tag">Prakriti Thapa</span>
+                                        </div>
                                     </div>
 
-                                    <div className="grid">
-                                        <div className="card">
-                                            <div className="course-title">CA 6P2 - MAJOR PROJECT LAB BCA-202...</div>
-                                            <div className="course-sub">CA 6P2 - MAJOR PROJECT LAB</div>
-                                            <div className="teachers">
-                                                <span className="tag">Melwyn Amrithraj</span>
-                                                <span className="tag">Shalini S</span>
-                                            </div>
+                                    <div className="card">
+                                        <div className="course-title">DAV 02 - POWER BI BCA...</div>
+                                        <div className="course-sub">DAV 02 - Power BI</div>
+                                        <div className="teachers">
+                                            <span className="tag">MANIVANNAN T</span>
                                         </div>
+                                    </div>
 
-                                        <div className="card">
-                                            <div className="course-title">CA 6P1 - MOBILE APPLICATION DEVEL...</div>
-                                            <div className="course-sub">CA 6P1 - Mobile Application Development Lab</div>
-                                            <div className="teachers">
-                                                <span className="tag">SRUTHI SURENDRAN P</span>
-                                                <span className="tag">Prakriti Thapa</span>
-                                            </div>
+                                    <div className="card">
+                                        <div className="course-title">CADE 6423 - MOBILE APPLICATION DEV...</div>
+                                        <div className="course-sub">CADE 6423 - Mobile Application Development</div>
+                                        <div className="teachers">
+                                            <span className="tag">SRUTHI SURENDRAN P</span>
                                         </div>
+                                    </div>
 
-                                        <div className="card">
-                                            <div className="course-title">DAV 02 - POWER BI BCA...</div>
-                                            <div className="course-sub">DAV 02 - Power BI</div>
-                                            <div className="teachers">
-                                                <span className="tag">MANIVANNAN T</span>
-                                            </div>
+                                    <div className="card">
+                                        <div className="course-title">CA 6323 - INTERNET OF THINGS BCA-202...</div>
+                                        <div className="course-sub">CA 6323 - Internet of things</div>
+                                        <div className="teachers">
+                                            <span className="tag">MANIVANNAN T</span>
                                         </div>
+                                    </div>
 
-                                        <div className="card">
-                                            <div className="course-title">CADE 6423 - MOBILE APPLICATION DEV...</div>
-                                            <div className="course-sub">CADE 6423 - Mobile Application Development</div>
-                                            <div className="teachers">
-                                                <span className="tag">SRUTHI SURENDRAN P</span>
-                                            </div>
+                                    <div className="card">
+                                        <div className="course-title">CA 6223 - ARTIFICIAL INTELLIGENCE AN...</div>
+                                        <div className="course-sub">CA 6223 - Artificial Intelligence and Applications</div>
+                                        <div className="teachers">
+                                            <span className="tag">Melwyn Amrithraj</span>
                                         </div>
+                                    </div>
 
-                                        <div className="card">
-                                            <div className="course-title">CA 6323 - INTERNET OF THINGS BCA-202...</div>
-                                            <div className="course-sub">CA 6323 - Internet of things</div>
-                                            <div className="teachers">
-                                                <span className="tag">MANIVANNAN T</span>
-                                            </div>
-                                        </div>
-
-                                        <div className="card">
-                                            <div className="course-title">CA 6223 - ARTIFICIAL INTELLIGENCE AN...</div>
-                                            <div className="course-sub">CA 6223 - Artificial Intelligence and Applications</div>
-                                            <div className="teachers">
-                                                <span className="tag">Melwyn Amrithraj</span>
-                                            </div>
-                                        </div>
-
-                                        <div className="card">
-                                            <div className="course-title">CA 6123 - SOFTWARE ENGINEERING...</div>
-                                            <div className="course-sub">CA 6123 - Software Engineering</div>
-                                            <div className="teachers">
-                                                <span className="tag">Prakriti Thapa</span>
-                                            </div>
+                                    <div className="card">
+                                        <div className="course-title">CA 6123 - SOFTWARE ENGINEERING...</div>
+                                        <div className="course-sub">CA 6123 - Software Engineering</div>
+                                        <div className="teachers">
+                                            <span className="tag">Prakriti Thapa</span>
                                         </div>
                                     </div>
                                 </div>
-                            )}
-
-                            {/* DASHBOARD */}
-                            {activeTab === 'dashboard' && (
-                                <div id="dashboardSection">
-                                    <div className="dashboard-grid" style={{ gridTemplateColumns: '1fr' }}>
-                                        <div>
-                                            <div style={{ fontWeight: 800, color: '#374151', marginBottom: '10px' }}>📌 MY ATTENDANCE (HOUR-WISE)</div>
-                                            <div className="attendance-card">
-                                                <div className="attendance-box">
-                                                    <div className="att-details">
-                                                        <div><span><b>Classes Attended:</b></span> <span>{attTotals.attended}</span></div>
-                                                        <div><span><b>Total Classes:</b></span> <span>{attTotals.total}</span></div>
-                                                        <div><span><b>Overall Attendance:</b></span> <span style={{ color: '#16a34a', fontWeight: 'bold' }}>{attTotals.percent}%</span></div>
-                                                    </div>
-                                                </div>
-
-                                                <div className="bar">
-                                                    <div className="bar-fill" style={{ width: `${attTotals.percent}%` }}></div>
-                                                </div>
-
-                                                <div className="att-links">
-                                                    <span>Course wise Detailed Breakdown</span>
-                                                    <span>Consolidated Day/Hour Breakdown</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* New Bottom Section */}
-                                    <div className="dash-bottom">
-                                        {/* Daily Schedule */}
-                                        <div className="box">
-                                            <div className="box-title">📅 DAILY SCHEDULE</div>
-
-                                            <div className="schedule-item">
-                                                <div className="schedule-left">
-                                                    <b>Mobile Application Development Lab</b>
-                                                    <span>Room: Lab-3 • Faculty: Sruthi Surendran</span>
-                                                </div>
-                                                <div className="time-pill">09:00 - 10:00</div>
-                                            </div>
-
-                                            <div className="schedule-item">
-                                                <div className="schedule-left">
-                                                    <b>Internet of Things</b>
-                                                    <span>Room: 204 • Faculty: Manivannan T</span>
-                                                </div>
-                                                <div className="time-pill">10:00 - 11:00</div>
-                                            </div>
-
-                                            <div className="schedule-item">
-                                                <div className="schedule-left">
-                                                    <b>Artificial Intelligence and Applications</b>
-                                                    <span>Room: 105 • Faculty: Melwyn Amrithraj</span>
-                                                </div>
-                                                <div className="time-pill">11:15 - 12:15</div>
-                                            </div>
-
-                                            <div className="schedule-item">
-                                                <div className="schedule-left">
-                                                    <b>Software Engineering</b>
-                                                    <span>Room: 301 • Faculty: Prakriti Thapa</span>
-                                                </div>
-                                                <div className="time-pill">01:30 - 02:30</div>
-                                            </div>
-                                        </div>
-
-                                        {/* Upcoming Deadlines */}
-                                        <div className="box">
-                                            <div className="box-title">⏳ UPCOMING DEADLINES</div>
-
-                                            <div className="deadline">
-                                                <div>
-                                                    <b>IoT Assignment</b><br />
-                                                    <span>Due: 26 Jan 2026</span>
-                                                </div>
-                                                <div className="status">Pending</div>
-                                            </div>
-
-                                            <div className="deadline">
-                                                <div>
-                                                    <b>Mobile App Lab Record</b><br />
-                                                    <span>Due: 28 Jan 2026</span>
-                                                </div>
-                                                <div className="status">Pending</div>
-                                            </div>
-
-                                            <div className="deadline">
-                                                <div>
-                                                    <b>AI Mini Project</b><br />
-                                                    <span>Due: 30 Jan 2026</span>
-                                                </div>
-                                                <div className="status green">Submitted</div>
-                                            </div>
-
-                                            <div className="deadline">
-                                                <div>
-                                                    <b>Software Engineering Quiz</b><br />
-                                                    <span>Due: 01 Feb 2026</span>
-                                                </div>
-                                                <div className="status">Pending</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
+                            </div>
                         </div>
                     )}
 
@@ -550,19 +602,19 @@ const Dashboard = ({ type, studentId, onNavigate, onLogout, shouldCollapse }) =>
                                             </tr>
                                             <tr>
                                                 <td>Gender:<span>*</span></td>
-                                                <td className="profile-val">male</td>
+                                                <td className="profile-val">{studentId === '233bcac30' ? 'female' : 'male'}</td>
                                             </tr>
                                             <tr>
                                                 <td>Birth Day:<span>*</span></td>
-                                                <td className="profile-val">01-11-2005</td>
+                                                <td className="profile-val">{studentId === '233bcac30' ? '02-09-2005' : '01-11-2005'}</td>
                                             </tr>
                                             <tr>
                                                 <td>Birth Place:<span>*</span></td>
-                                                <td className="profile-val">Mandya</td>
+                                                <td className="profile-val">{studentId === '233bcac30' ? 'Thrissur' : 'Mandya'}</td>
                                             </tr>
                                             <tr>
                                                 <td>Birth State:<span>*</span></td>
-                                                <td className="profile-val">Karnataka</td>
+                                                <td className="profile-val">{studentId === '233bcac30' ? 'Kerala' : 'Karnataka'}</td>
                                             </tr>
                                             <tr>
                                                 <td>Birth Country:<span>*</span></td>
@@ -671,7 +723,7 @@ const Dashboard = ({ type, studentId, onNavigate, onLogout, shouldCollapse }) =>
                     {/* ATTENDANCE PAGE */}
                     {activePage === 'attendance' && (
                         <div id="attendancePage">
-                            <AttendanceReport onNavigate={setActivePage} data={studentData.attendance} />
+                            <AttendanceReport onNavigate={setActivePage} data={studentData.attendance} initialSemester={attendanceInitialSemester} />
                         </div>
                     )}
 
@@ -696,13 +748,13 @@ const Dashboard = ({ type, studentId, onNavigate, onLogout, shouldCollapse }) =>
                                 <div className="box-title">LEAVE MANAGEMENT</div>
                                 <div style={{ background: '#fff', padding: '20px', borderRadius: '8px', border: '1px solid #eee' }}>
                                     <p style={{ color: '#666', marginBottom: '20px' }}>Apply for leave or view your leave status here.</p>
-                                    <button className="filter-btn" onClick={() => setActivePage('apply-leave')} style={{ background: '#7c3aed', color: 'white', border: 'none' }}>+ Apply New Leave</button>
+                                    <button className="filter-btn" onClick={() => { setPrefillLeaveData(null); setCurrentAbsentNotifId(null); setActivePage('apply-leave'); }} style={{ background: '#7c3aed', color: 'white', border: 'none' }}>+ Apply New Leave</button>
 
                                     <table style={{ width: '100%', marginTop: '30px', borderCollapse: 'collapse' }}>
                                         <thead>
                                             <tr style={{ borderBottom: '2px solid #eee', textAlign: 'left' }}>
                                                 <th style={{ padding: '10px' }}>Type</th>
-                                                <th style={{ padding: '10px' }}>Date range</th>
+                                                <th style={{ padding: '10px' }}>Date</th>
                                                 <th style={{ padding: '10px' }}>Reason</th>
                                                 <th style={{ padding: '10px' }}>Leave Status</th>
                                                 <th style={{ padding: '10px' }}>Attendance Status</th>
@@ -710,10 +762,20 @@ const Dashboard = ({ type, studentId, onNavigate, onLogout, shouldCollapse }) =>
                                         </thead>
                                         <tbody>
                                             {studentData.leaves && studentData.leaves.length > 0 ? (
-                                                studentData.leaves.map((leave, index) => (
+                                                [...studentData.leaves].reverse().map((leave, index) => (
                                                     <tr key={leave.id || index} style={{ borderBottom: '1px solid #eee' }}>
                                                         <td style={{ padding: '10px' }}>{leave.type}</td>
-                                                        <td style={{ padding: '10px' }}>{leave.on}</td>
+                                                        <td style={{ padding: '10px' }}>
+                                                            {(() => {
+                                                                const rawDate = leave.on || leave.from;
+                                                                if (!rawDate) return '';
+                                                                const parts = rawDate.split('-');
+                                                                if (parts.length === 3 && parts[0].length === 4) {
+                                                                    return `${parts[2]}/${parts[1]}/${parts[0]}`;
+                                                                }
+                                                                return rawDate;
+                                                            })()}
+                                                        </td>
                                                         <td style={{ padding: '10px' }}>{leave.reason}</td>
                                                         <td style={{ padding: '10px' }}>
                                                             <span style={{
@@ -795,6 +857,13 @@ const Dashboard = ({ type, studentId, onNavigate, onLogout, shouldCollapse }) =>
                                                 .then(data => {
                                                     if (data.success) {
                                                         alert('Leave application submitted successfully!');
+                                                        setLeaveDescription('');
+                                                        if (currentAbsentNotifId) {
+                                                            const updated = [...appliedAbsentNotifs, currentAbsentNotifId];
+                                                            setAppliedAbsentNotifs(updated);
+                                                            localStorage.setItem(`appliedAbsentNotifs_${studentId}`, JSON.stringify(updated));
+                                                            setCurrentAbsentNotifId(null);
+                                                        }
                                                         // Refresh leaves
                                                         fetch(`http://127.0.0.1:5001/api/student/${studentId}/leaves`)
                                                             .then(res => res.json())
@@ -830,7 +899,7 @@ const Dashboard = ({ type, studentId, onNavigate, onLogout, shouldCollapse }) =>
                                     >
                                         <div className="form-group" style={{ marginBottom: '20px' }}>
                                             <label style={{ display: 'block', fontWeight: 'bold', fontSize: '12px', color: '#666', marginBottom: '8px' }}>LEAVE TYPE *</label>
-                                            <select id="leave-type" className="input-field" style={{ width: '100%', padding: '10px', background: '#f9fafb' }} required>
+                                            <select id="leave-type" key={currentAbsentNotifId || 'new'} className="input-field" style={{ width: '100%', padding: '10px', background: '#f9fafb' }} required>
                                                 <option value="">Select</option>
                                                 <option>choir</option>
                                                 <option>cultural activities</option>
@@ -860,7 +929,7 @@ const Dashboard = ({ type, studentId, onNavigate, onLogout, shouldCollapse }) =>
                                                     "CA 6123 - SOFTWARE ENGINEERING"
                                                 ].map((subj, i) => (
                                                     <label key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', cursor: 'pointer' }}>
-                                                        <input type="checkbox" value={subj} /> {subj}
+                                                        <input type="checkbox" key={`${subj}-${prefillLeaveData?.subject === subj}`} value={subj} defaultChecked={prefillLeaveData?.subject === subj} /> {subj}
                                                     </label>
                                                 ))}
                                             </div>
@@ -868,22 +937,22 @@ const Dashboard = ({ type, studentId, onNavigate, onLogout, shouldCollapse }) =>
 
                                         <div className="form-group" style={{ marginBottom: '20px' }}>
                                             <label style={{ display: 'block', fontWeight: 'bold', fontSize: '12px', color: '#666', marginBottom: '8px' }}>LEAVE ON *</label>
-                                            <input id="leave-on" type="date" className="input-field" style={{ width: '100%', padding: '10px', background: '#f9fafb' }} required />
+                                            <input id="leave-on" type="date" key={prefillLeaveData?.date || 'default-date'} className="input-field" style={{ width: '100%', padding: '10px', background: '#f9fafb' }} required defaultValue={prefillLeaveData?.date || ''} />
                                         </div>
 
                                         <div className="form-group" style={{ marginBottom: '20px' }}>
                                             <label style={{ display: 'block', fontWeight: 'bold', fontSize: '12px', color: '#666', marginBottom: '8px' }}>LEAVE REASON *</label>
-                                            <input id="leave-reason" type="text" className="input-field" style={{ width: '100%', padding: '10px', background: '#f9fafb' }} required />
+                                            <input id="leave-reason" key={currentAbsentNotifId || 'new'} type="text" className="input-field" style={{ width: '100%', padding: '10px', background: '#f9fafb' }} required />
                                         </div>
 
                                         <div className="form-group" style={{ marginBottom: '20px' }}>
                                             <label style={{ display: 'block', fontWeight: 'bold', fontSize: '12px', color: '#666', marginBottom: '8px' }}>LEAVE DESCRIPTION *</label>
-                                            <textarea id="leave-description" className="input-field" style={{ width: '100%', height: '100px', padding: '10px', background: '#f9fafb' }} required></textarea>
-                                            <p style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>You have 500 chars left</p>
+                                            <textarea id="leave-description" key={currentAbsentNotifId || 'new'} value={leaveDescription} onChange={(e) => setLeaveDescription(e.target.value)} maxLength={500} className="input-field" style={{ width: '100%', height: '100px', padding: '10px', background: '#f9fafb' }} required></textarea>
+                                            <p style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>You have {500 - leaveDescription.length} chars left</p>
                                         </div>
 
                                         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-                                            <button type="button" onClick={() => setActivePage('leave')} style={{ background: 'none', border: 'none', color: '#666', cursor: 'pointer' }}>Cancel</button>
+                                            <button type="button" onClick={() => { setActivePage('leave'); setLeaveDescription(''); }} style={{ background: 'none', border: 'none', color: '#666', cursor: 'pointer' }}>Cancel</button>
                                             <button id="submit-leave-btn" type="submit" style={{ background: '#007bff', color: 'white', border: 'none', padding: '10px 30px', borderRadius: '4px', cursor: 'pointer' }}>Submit</button>
                                         </div>
                                     </form>

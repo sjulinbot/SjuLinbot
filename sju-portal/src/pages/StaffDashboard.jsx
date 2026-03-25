@@ -5,6 +5,11 @@ const StaffDashboard = ({ onLogout, onNavigate }) => {
     const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard', 'communities', 'courseCommunities'
     const [attendanceSubTab, setAttendanceSubTab] = useState(null); // 'selectCourse', 'withoutTimetable'
     const [selectedCourse, setSelectedCourse] = useState(null);
+    const [selectedDate, setSelectedDate] = useState(() => {
+        const d = new Date();
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    });
+    const [markedLogs, setMarkedLogs] = useState([]);
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [isHovered, setIsHovered] = useState(false);
     const [showProfileDropdown, setShowProfileDropdown] = useState(false);
@@ -27,15 +32,19 @@ const StaffDashboard = ({ onLogout, onNavigate }) => {
     const [leaveSubjectStates, setLeaveSubjectStates] = useState({}); // { leaveId: { subCode: 'approved' | 'rejected' } }
     const [showNotificationDropdown, setShowNotificationDropdown] = useState(false);
     const notificationRef = useRef(null);
+    const profileRef = useRef(null);
 
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (notificationRef.current && !notificationRef.current.contains(event.target)) {
                 setShowNotificationDropdown(false);
             }
+            if (profileRef.current && !profileRef.current.contains(event.target)) {
+                setShowProfileDropdown(false);
+            }
         };
 
-        if (showNotificationDropdown) {
+        if (showNotificationDropdown || showProfileDropdown) {
             document.addEventListener('mousedown', handleClickOutside);
         } else {
             document.removeEventListener('mousedown', handleClickOutside);
@@ -44,13 +53,13 @@ const StaffDashboard = ({ onLogout, onNavigate }) => {
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, [showNotificationDropdown]);
+    }, [showNotificationDropdown, showProfileDropdown]);
 
     const getRelevantSubjects = (subjects) => {
         if (!Array.isArray(subjects)) return [];
         const staffSubjectsMap = {
             'CA 6P1 - MOBILE APPLICATION DEVELOPMENT LAB': 'CA6P1',
-            'CADE 6423 - MOBILE APPLICATION DEVELOPMENT': 'CA6423'
+            'CADE 6423 - MOBILE APPLICATION DEVELOPMENT': 'CADE6423'
         };
         return subjects
             .filter(sub => staffSubjectsMap[sub.toUpperCase()])
@@ -64,9 +73,20 @@ const StaffDashboard = ({ onLogout, onNavigate }) => {
             .catch(err => console.error('Error fetching leaves:', err));
     };
 
+    const fetchAttendanceLogs = () => {
+        fetch('http://127.0.0.1:5001/api/staff/attendance-logs')
+            .then(res => res.json())
+            .then(data => setMarkedLogs(data))
+            .catch(err => console.error('Error fetching logs:', err));
+    };
+
     useEffect(() => {
         fetchLeaveRequests();
-        const interval = setInterval(fetchLeaveRequests, 10000); // poll every 10s for new notifications
+        fetchAttendanceLogs();
+        const interval = setInterval(() => {
+            fetchLeaveRequests();
+            fetchAttendanceLogs();
+        }, 10000); // poll every 10s for new notifications
         return () => clearInterval(interval);
     }, []);
 
@@ -157,7 +177,50 @@ const StaffDashboard = ({ onLogout, onNavigate }) => {
         });
     };
 
+    const isDateMarked = (dateStr) => {
+        if (!dateStr) return false;
+        
+        // Return true (marked/disabled) if no course is selected
+        if (!selectedCourse) return true;
+
+        // Check for Sunday
+        const date = new Date(dateStr.replace(/-/g, '/'));
+        if (date.getDay() === 0) return true;
+
+        const cutoff = new Date('2026-03-23');
+        // If date is before or on 23rd, it's always marked (historical)
+        if (date <= cutoff) return true;
+        
+        // OR if it's explicitly logged
+        return markedLogs.some(log => 
+            log.date === dateStr && 
+            log.courseTitle === (selectedCourse?.title || "")
+        );
+    };
+
+    const isLeaveApprovedForStudent = (studentId, dateStr, courseTitle) => {
+        if (!leaveRequests || !courseTitle) return false;
+        
+        // Find if this student has an approved leave for this date
+        const leave = leaveRequests.find(l => 
+            l.studentId.toLowerCase() === studentId.toLowerCase() && 
+            (l.on === dateStr || l.from === dateStr) && // Match single date or from date
+            l.attendanceStatus === 'Approved'
+        );
+        
+        if (!leave) return false;
+
+        // Check if the current course is in any of the approved subjects
+        const targetTitleNormalized = courseTitle.toUpperCase().replace(/\s+/g, '');
+        return (leave.approvedSubjects || []).some(code => 
+            targetTitleNormalized.includes(code.toUpperCase()) || 
+            code.toUpperCase().includes(targetTitleNormalized)
+        );
+    };
+
     const toggleAttendance = (id) => {
+        if (isDateMarked(selectedDate)) return;
+        
         setStudents(prev => prev.map(s => {
             if (s.id === id) {
                 const nextStatus = s.status === 'unmarked' ? 'present' : (s.status === 'present' ? 'absent' : 'unmarked');
@@ -179,21 +242,62 @@ const StaffDashboard = ({ onLogout, onNavigate }) => {
         }));
     };
 
+    const handleDownloadAttendance = () => {
+        if (!selectedCourse) {
+            alert("Please select a course to download attendance.");
+            return;
+        }
+
+        const csvContent = [
+            ["Registration Number", "Student Name", "Status"],
+            ...students.map(s => [s.id.toUpperCase(), s.name, s.status.toUpperCase()])
+        ].map(e => e.join(",")).join("\n");
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", `${selectedCourse.sub}_Attendance.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
+    const handleEditAttendance = () => {
+        if (!selectedCourse) {
+            alert("Please select a course first.");
+            return;
+        }
+        alert("Edit mode enabled. You can now click on students to modify their attendance.");
+    };
+
+    const handleResetFilters = () => {
+        setSelectedCourse(null);
+        setStudents(prev => prev.map(s => ({ ...s, status: 'unmarked' })));
+        
+        const d = new Date();
+        const today = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        setSelectedDate(today);
+    };
+
     const handleSubmitAttendance = async () => {
         if (!selectedCourse) {
             alert("Please select a course first.");
             return;
         }
 
-        const markedStudents = students.filter(s => s.status !== 'unmarked');
-        if (markedStudents.length === 0) {
-            alert("Please mark at least one student.");
+        const unmarkedStudents = students.filter(s => s.status === 'unmarked');
+        if (unmarkedStudents.length > 0) {
+            alert("Please mark attendance for all students before submitting.");
             return;
         }
 
+        const attendanceDate = selectedDate;
+        console.log('Submitting attendance for date:', attendanceDate);
+
         try {
             let successes = 0;
-            for (const student of markedStudents) {
+            for (const student of students) {
                 const response = await fetch('http://127.0.0.1:5001/api/student/mark-attendance', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -201,7 +305,8 @@ const StaffDashboard = ({ onLogout, onNavigate }) => {
                         studentId: student.id,
                         courseTitle: selectedCourse.title,
                         status: student.status,
-                        semester: 'sem6'
+                        semester: 'sem6',
+                        date: attendanceDate
                     })
                 });
 
@@ -213,8 +318,20 @@ const StaffDashboard = ({ onLogout, onNavigate }) => {
                 }
             }
 
-            if (successes === markedStudents.length) {
-                alert(`Successfully marked attendance for ${successes} students!`);
+            if (successes === students.length) {
+                // Record completion log
+                await fetch('http://127.0.0.1:5001/api/staff/attendance-logs', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        date: attendanceDate,
+                        courseTitle: selectedCourse.title,
+                        studentsStatus: students.map(s => ({ id: s.id, status: s.status }))
+                    })
+                });
+
+                alert(`Successfully marked attendance for all students!`);
+                fetchAttendanceLogs(); // Refresh logs
                 // Reset statuses
                 setStudents(prev => prev.map(s => ({ ...s, status: 'unmarked' })));
             } else {
@@ -272,7 +389,10 @@ const StaffDashboard = ({ onLogout, onNavigate }) => {
                         <div className="exam-section-title">ACTIONS & APPROVAL</div>
                         <div className="exam-grid">
                             <div className="exam-item" onClick={() => setActiveTab('internalMarkEntry')}>
-                                <div className="exam-label">Internal / CIA Mark Entry</div>
+                                <div className="exam-label">
+                                    <div style={{ fontSize: '24px', marginBottom: '8px', textAlign: 'center' }}>✏️</div>
+                                    Internal / CIA Mark Entry
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -315,9 +435,6 @@ const StaffDashboard = ({ onLogout, onNavigate }) => {
                 return (
                     <div className="attendance-without-timetable">
                         <div className="filters-box">
-                            <div className="adv-filter">
-                                ADVANCED FILTER
-                            </div>
                             <div className="filter-grid-row">
                                 <div className="filter-field">
                                     <label>SELECT COMMUNITY <span className="req-star">*</span></label>
@@ -335,28 +452,29 @@ const StaffDashboard = ({ onLogout, onNavigate }) => {
                                 </div>
                                 <div className="filter-field">
                                     <label>SELECT DATE <span className="req-star">*</span></label>
-                                    <input type="date" defaultValue="2026-03-07" />
-                                </div>
-                                <div className="filter-field">
-                                    <label>SELECT HOUR <span className="req-star">*</span></label>
-                                    <select defaultValue="1">
-                                        <option value="1">1</option>
-                                        <option value="2">2</option>
-                                        <option value="3">3</option>
-                                        <option value="4">4</option>
-                                        <option value="5">5</option>
-                                    </select>
+                                    <input 
+                                        id="attendance-date" 
+                                        type="date" 
+                                        value={selectedDate}
+                                        onChange={(e) => setSelectedDate(e.target.value)}
+                                    />
                                 </div>
                             </div>
                             <div className="filter-btns-row">
-                                <button className="btn-reset-att" onClick={() => setStudents(prev => prev.map(s => ({ ...s, status: 'unmarked' })))}>RESET</button>
-                                <button className="btn-search-att" onClick={handleSubmitAttendance}>SUBMIT ATTENDANCE</button>
+                                <button className="btn-reset-att" onClick={handleResetFilters}>RESET</button>
+                                <button 
+                                    className="btn-search-att" 
+                                    onClick={handleSubmitAttendance}
+                                    disabled={isDateMarked(selectedDate)}
+                                    style={isDateMarked(selectedDate) ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
+                                >
+                                    SUBMIT ATTENDANCE
+                                </button>
                             </div>
                         </div>
 
                         <div className="att-actions-strip">
                             <div className="left-actions">
-                                <button className="btn-copy-att">COPY ATTENDANCE</button>
                                 <div className="att-legend-row">
                                     <div className="legend-item-box"><div className="legend-sq sq-present"></div> Present</div>
                                     <div className="legend-item-box"><div className="legend-sq sq-absent"></div> Absent</div>
@@ -364,39 +482,41 @@ const StaffDashboard = ({ onLogout, onNavigate }) => {
                                     <div className="legend-item-box"><div className="legend-sq sq-marked"></div> Already Marked</div>
                                 </div>
                             </div>
-                            <div className="right-actions-group">
-                                <div className="action-buttons-row">
-                                    <button className="btn-dwl">DOWNLOAD</button>
-                                    <button className="btn-del-att">DELETE</button>
-                                    <button className="btn-edit-att">EDIT</button>
-                                </div>
-                            </div>
                         </div>
+
 
                         <div className="batch-title-header">
                             {selectedCourse ? selectedCourse.sub : "6th Semester BCA [A] - 2024"}
                         </div>
 
                         <div className="students-grid-container">
-                            {students.map((student) => (
-                                <div
-                                    className={`stu-att-card ${student.status}`}
-                                    key={student.id}
-                                    onClick={() => toggleAttendance(student.id)}
-                                >
-                                    <div className="st-name">{student.name}</div>
-                                    <div className="st-info">{student.id}</div>
-                                    <div className="st-info">Sem: 06</div>
-                                    <div className="st-status-circle">
-                                        {student.status === 'present' ? '✓' : (student.status === 'absent' ? '✕' : '')}
+                            {students.map((student) => {
+                                const isMarked = isDateMarked(selectedDate);
+                                const statusClass = isMarked ? 'marked' : student.status;
+                                
+                                return (
+                                    <div
+                                        className={`stu-att-card ${statusClass}`}
+                                        key={student.id}
+                                        onClick={() => toggleAttendance(student.id)}
+                                    >
+                                        <div className="st-name">{student.name}</div>
+                                        <div className="st-info">{student.id}</div>
+                                        <div className="st-info">Sem: 06</div>
+                                        {(() => {
+                                            const icon = isMarked ? (
+                                                (!selectedCourse || new Date(selectedDate.replace(/-/g, '/')).getDay() === 0) ? '⊘' : 
+                                                (isLeaveApprovedForStudent(student.id, selectedDate, selectedCourse?.title) ? '' : 
+                                                 (markedLogs.find(l => l.date === selectedDate && l.courseTitle === selectedCourse?.title)?.studentsStatus?.find(s => s.id === student.id)?.status === 'absent' ? '✕' : ''))
+                                            ) : (student.status === 'present' ? '✓' : (student.status === 'absent' ? '✕' : ''));
+                                            
+                                            return icon ? <div className="st-status-circle">{icon}</div> : null;
+                                        })()}
                                     </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
 
-                        <div className="quick-access-pill" onClick={() => { setActiveTab('dashboard'); setAttendanceSubTab(null); }}>
-                            Quick Access
-                        </div>
                     </div>
                 );
             }
@@ -565,7 +685,7 @@ const StaffDashboard = ({ onLogout, onNavigate }) => {
                 if (!Array.isArray(subjects)) return [];
                 const staffSubjectsMap = {
                     'CA 6P1 - MOBILE APPLICATION DEVELOPMENT LAB': 'CA6P1',
-                    'CADE 6423 - MOBILE APPLICATION DEVELOPMENT': 'CA6423'
+                    'CADE 6423 - MOBILE APPLICATION DEVELOPMENT': 'CADE6423'
                 };
                 return subjects
                     .filter(sub => staffSubjectsMap[sub.toUpperCase()])
@@ -599,7 +719,7 @@ const StaffDashboard = ({ onLogout, onNavigate }) => {
                                     <th>STUDENT NAME</th>
                                     <th>REG. NUMBER</th>
                                     <th>LEAVE TYPE</th>
-                                    <th>DATE RANGE</th>
+                                    <th>DATE</th>
                                     <th>REASON</th>
                                     <th>STATUS</th>
                                     <th>ACTIONS</th>
@@ -612,8 +732,28 @@ const StaffDashboard = ({ onLogout, onNavigate }) => {
                                             <td className="student-name-cell">{leave.studentName}</td>
                                             <td>{leave.studentId.toUpperCase()}</td>
                                             <td>{leave.type.toUpperCase()}</td>
-                                            <td>{leave.on || `${leave.from} - ${leave.to}`}</td>
-                                            <td>{leave.reason}</td>
+                                            <td>
+                                                {(() => {
+                                                    const rawDate = leave.on || leave.from;
+                                                    if (!rawDate) return '';
+                                                    const parts = rawDate.split('-');
+                                                    if (parts.length === 3 && parts[0].length === 4) {
+                                                        return `${parts[2]}/${parts[1]}/${parts[0]}`;
+                                                    }
+                                                    return rawDate;
+                                                })()}
+                                            </td>
+                                            <td>
+                                                <div className="reason-cell">
+                                                    {leave.reason}
+                                                    {leave.description && (
+                                                        <div className="description-tooltip">
+                                                            <span className="tooltip-header">Student's Description</span>
+                                                            {leave.description}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </td>
                                             <td>
                                                 <span className={`status-pill ${leave.status.toLowerCase()}`}>
                                                     {leave.status}
@@ -694,7 +834,7 @@ const StaffDashboard = ({ onLogout, onNavigate }) => {
         return (
             <div className="quick-access-section">
                 <div className="grid-container">
-                    <div className="grid-item" onClick={() => setActiveTab('attendance')}><span className="icon">✅</span> Attendance</div>
+                    <div className="grid-item" onClick={() => { setActiveTab('attendance'); setAttendanceSubTab('withoutTimetable'); }}><span className="icon">✏︎</span> Attendance</div>
                     <div className="grid-item" onClick={() => setActiveTab('studentLeave')}><span className="icon">👤</span> Student Leave Management</div>
                     <div className="grid-item" onClick={() => setActiveTab('exam')}><span className="icon">📄</span> Exam</div>
                 </div>
@@ -706,11 +846,6 @@ const StaffDashboard = ({ onLogout, onNavigate }) => {
             <div className={`staff-sidebar ${!isSidebarOpen ? 'collapsed' : ''}`}>
                     <div className="staff-logo">
                         <div className="back-arrow" onClick={() => onNavigate('home')}>←</div>
-                        <button className="menu-btn" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>≡</button>
-                    </div>
-
-                    <div className="search-box">
-                        <input type="text" placeholder="Search" />
                     </div>
 
                     <div className="staff-nav-menu">
@@ -720,29 +855,17 @@ const StaffDashboard = ({ onLogout, onNavigate }) => {
                         <div className={`nav-item has-submenu ${activeTab === 'courseCommunities' ? 'active' : ''}`} onClick={() => setActiveTab('courseCommunities')}>
                             <span>Course Community</span>
                         </div>
-                        <div className="nav-item-group">
-                            <div className={`nav-item has-submenu ${activeTab === 'attendance' ? 'active' : ''}`} onClick={() => { setActiveTab('attendance'); setAttendanceSubTab(null); }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                    <span>Attendance</span>
-                                </div>
+                        <div className={`nav-item ${activeTab === 'attendance' ? 'active' : ''}`} onClick={() => { setActiveTab('attendance'); setAttendanceSubTab('withoutTimetable'); }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <span>Attendance</span>
                             </div>
-                            {activeTab === 'attendance' && (
-                                <>
-                                    <div className={`sub-nav-item ${attendanceSubTab === 'withoutTimetable' ? 'active' : ''}`} onClick={() => {
-                                        if (!selectedCourse) setSelectedCourse(sruthiCourses[0]);
-                                        setAttendanceSubTab('withoutTimetable');
-                                    }}>
-                                        Mark Attendance
-                                    </div>
-                                </>
-                            )}
                         </div>
 
                         <div className={`nav-item has-submenu ${activeTab === 'studentLeave' ? 'active' : ''}`} onClick={() => setActiveTab('studentLeave')}>
                             <span>Student Leave Management</span>
                         </div>
 
-                        <div className="nav-item has-submenu" onClick={() => setActiveTab('exam')}>
+                        <div className={`nav-item has-submenu ${activeTab === 'exam' || activeTab === 'internalMarkEntry' ? 'active' : ''}`} onClick={() => setActiveTab('exam')}>
                             <span>Exam Mark Entry</span>
                         </div>
                     </div>
@@ -788,7 +911,7 @@ const StaffDashboard = ({ onLogout, onNavigate }) => {
                                 </div>
                             )}
                         </div>
-                        <div className="staff-profile-container">
+                        <div className="staff-profile-container" ref={profileRef}>
                             <div className="staff-profile-bubble" onClick={() => setShowProfileDropdown(!showProfileDropdown)}>
                                 <div className="avatar">👤</div>
                                 <div className="profile-info">

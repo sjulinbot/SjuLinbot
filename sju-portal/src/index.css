@@ -396,7 +396,7 @@ ul {
   padding: 40px;
   border-radius: 20px;
   text-align: left;
-  transition: var(--transition);
+  transition: all 0.3s ease, transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
   border: 1px solid rgba(0, 0, 0, 0.05);
 }
@@ -448,7 +448,7 @@ ul {
   padding: 50px 30px;
   border-radius: 20px;
   text-align: center;
-  transition: var(--transition);
+  transition: all 0.3s ease, transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
   border: 1px solid rgba(0, 0, 0, 0.05);
   display: flex;
@@ -598,6 +598,15 @@ ul {
   padding: 0;
   opacity: 1;
   font-size: 24px;
+  transition: color 0.3s ease, transform 0.1s ease;
+}
+
+.close-btn:hover {
+  color: #d9a34a;
+}
+
+.close-btn:active {
+  transform: scale(0.85);
 }
 
 #chat-body {
@@ -666,6 +675,11 @@ ul {
 
 .option-btn-centered i {
   font-size: 20px;
+  transition: color 0.2s ease;
+}
+
+.option-btn-centered:hover i {
+  color: white !important;
 }
 
 /* --- LOGIN EMBEDDED --- */
@@ -673,10 +687,22 @@ ul {
   background: none;
   border: none;
   color: white;
-  font-size: 20px;
+  font-size: 26px;
   cursor: pointer;
   padding: 0;
   margin-right: 5px;
+  transition: color 0.3s ease, transform 0.1s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.back-btn:hover {
+  color: #d9a34a;
+}
+
+.back-btn:active {
+  transform: scale(0.85);
 }
 
 .chat-input-field {
@@ -698,6 +724,11 @@ ul {
   border-radius: 8px;
   font-weight: bold;
   cursor: pointer;
+  transition: transform 0.1s ease, background 0.2s ease;
+}
+
+.chat-login-btn:active {
+  transform: scale(0.95);
 }
 
 .login-error {
@@ -929,11 +960,65 @@ ul {
 
 .floating-top-btn:hover {
   transform: translateX(-50%) translateY(-5px);
-  box-shadow: 0 8px 15px rgba(217, 163, 74, 0.3);
+  background-color: transparent !important;
+  box-shadow: none;
 }
 
 .floating-top-btn:hover .top-btn-icon {
   transform: translateY(-2px);
+}
+
+.floating-top-btn.btn-right-side {
+  left: auto;
+  right: 30px;
+  transform: translateY(30px);
+}
+
+.floating-top-btn.btn-right-side.visible {
+  transform: translateY(0);
+}
+
+.floating-top-btn.btn-right-side:hover {
+  transform: translateY(-5px);
+}
+
+/* Scroll Animations */
+.fade-scroll {
+  opacity: 0;
+  transform: translateY(40px);
+}
+
+.fade-scroll.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.feature-card.fade-scroll.is-visible:hover,
+.contact-card.fade-scroll.is-visible:hover {
+  transform: translateY(-10px);
+}
+
+/* --- CHATBOT LOGOUT BTN AND OPTION BTN ACTIVE STATES --- */
+.chatbot-logout-btn {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 18px;
+  margin-left: 5px;
+  transition: color 0.3s ease, transform 0.1s ease;
+}
+
+.chatbot-logout-btn:hover {
+  color: #d9a34a;
+}
+
+.chatbot-logout-btn:active {
+  transform: scale(0.9);
+}
+
+.option-btn-centered:active {
+  transform: scale(0.95) !important;
 }
 
 /* Responsive Fixes */
